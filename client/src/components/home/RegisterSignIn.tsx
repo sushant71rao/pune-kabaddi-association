@@ -12,10 +12,8 @@ import MaxWidthWrapper from "../MaxWidthWrapper";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -40,6 +38,7 @@ const RegisterSingIn = () => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log("logged in")
+    console.log(data)
   }
 
   return (
@@ -61,7 +60,7 @@ const RegisterSingIn = () => {
             <Link to="/team-registration" className="w-full">
               <Button className="w-full">As Team</Button>
             </Link>
-            <Link to="/umpire-registration" className="w-full">
+            <Link to="/official-registration" className="w-full">
               <Button className="w-full">As Umpire</Button>
             </Link>
           </CardFooter>

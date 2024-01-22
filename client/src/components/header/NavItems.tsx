@@ -12,7 +12,7 @@ const NavItems = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-gray-800" : "text-gray-900"
+                `font-bold text-md block py-2 pr-4 pl-3 duration-200 ${isActive ? "text-gray-800" : "text-gray-900"
                 } border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-gray-900 lg:p-0`
               }
             >

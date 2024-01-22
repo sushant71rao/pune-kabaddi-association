@@ -1,4 +1,6 @@
 "use client";
+import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Form,
   FormControl,
@@ -22,30 +24,49 @@ import {
 } from "@/components/ui/select";
 
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Plus, Trash } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod"
-import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 import { Button } from "@/components/ui/button";
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Textarea } from "@/components/ui/textarea";
+import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
+
 const formSchema = teamRegistrationSchema
 
 const TeamRegistration = () => {
 
-  const form = useForm<z.infer<typeof teamRegistrationSchema>>({
-    resolver: zodResolver(teamRegistrationSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
+      teamName: "",
+      email: "",
+      phoneNo: "",
+      logo: "", // Assuming logo is a file path or base64 representation
+      // startingYear: , // Assuming startingYear is a Date object
+      category: "",
+      ageGroup: "",
+      zone: "",
+      authorizedPersonName: "",
+      authorizedPersonPhoneNo: "",
+      managerName: "",
+      managerPhoneNo: "",
+      password: "",
+      description: "",
+    }
 
-    },
   });
+
+  form.watch();
+
 
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -54,36 +75,84 @@ const TeamRegistration = () => {
   };
 
   return (
-    <Card className="max-w-xl sm:mx-auto mx-4 p-4 my-32">
+    <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
         <CardTitle className="text-3xl font-black text-slate-700">
-          Player Registration
+          Team Registration
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Full Name */}
+
+            {/* Team Name */}
             <FormField
               control={form.control}
-              name="fullName"
+              name="teamName"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                <FormItem className=" w-full">
+                  <FormLabel>Team Name*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Write your full name" {...field} />
+                    <Input placeholder="Your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Birth Date */}
+
+
+            {/* Email */}
             <FormField
               control={form.control}
-              name="birthDate"
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email*</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Write your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Phone Number */}
+            <FormField
+              control={form.control}
+              name="phoneNo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number*</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Write your phone Number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Logo */}
+            <FormField
+              control={form.control}
+              name="logo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Team Logo*</FormLabel>
+                  <FormControl>
+                    <Input id="avatar" type="file" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Started On */}
+            <FormField
+              control={form.control}
+              name="startingYear"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date of birth</FormLabel>
+                  <FormLabel>Starting Date*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -97,7 +166,7 @@ const TeamRegistration = () => {
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>pick starting date</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -119,13 +188,14 @@ const TeamRegistration = () => {
                 </FormItem>
               )}
             />
-            {/* Team Name */}
+
+            {/* Age Group */}
             <FormField
               control={form.control}
-              name="teamName"
+              name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select Your Team</FormLabel>
+                  <FormLabel>Category*</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}
@@ -133,32 +203,17 @@ const TeamRegistration = () => {
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select a timezone" />
+                        <SelectValue placeholder="Select Gender" />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="est">
-                          Eastern Standard Time (EST)
+                        <SelectItem value="m">
+                          Male
                         </SelectItem>
-                        <SelectItem value="cst">
-                          Central Standard Time (CST)
-                        </SelectItem>
-                        <SelectItem value="mst">
-                          Mountain Standard Time (MST)
-                        </SelectItem>
-                        <SelectItem value="pst">
-                          Pacific Standard Time (PST)
-                        </SelectItem>
-                        <SelectItem value="akst">
-                          Alaska Standard Time (AKST)
-                        </SelectItem>
-                        <SelectItem value="hst">
-                          Hawaii Standard Time (HST)
-                        </SelectItem>
-                        <SelectItem value="clt">
-                          Chile Standard Time (CLT)
+                        <SelectItem value="f">
+                          Female
                         </SelectItem>
                       </SelectGroup>
                     </SelectContent>
@@ -167,13 +222,13 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Age group */}
+            {/* Category */}
             <FormField
               control={form.control}
               name="ageGroup"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select Age Group [currently playing]</FormLabel>
+                  <FormLabel>Age Group*</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}
@@ -187,9 +242,15 @@ const TeamRegistration = () => {
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="est">Group1</SelectItem>
-                        <SelectItem value="cst">Group2</SelectItem>
-                        <SelectItem value="mst">Group3</SelectItem>
+                        <SelectItem value="subJunior">
+                          Sub Junior
+                        </SelectItem>
+                        <SelectItem value="junior">
+                          Junior
+                        </SelectItem>
+                        <SelectItem value="open">
+                          Open
+                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -197,16 +258,127 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Address */}
+            {/* Zone */}
             <FormField
               control={form.control}
-              name="address"
+              name="zone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Zone*</FormLabel>
+
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-[280px]">
+                        <SelectValue placeholder="Choose your Zone" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <FormMessage />
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="789654">
+                          411 355
+                        </SelectItem>
+                        <SelectItem value="758965">
+                          789 456
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+
+
+            {/* Authorized Person */}
+            <div className="flex gap-4 flex-wrap">
+              <FormField
+                control={form.control}
+                name="authorizedPersonName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Authorized Person Name*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="write persons name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="authorizedPersonPhoneNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Authorized Person PhonNo*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="write persons phone no." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Manager */}
+            <div className="flex gap-4 flex-wrap">
+              <FormField
+                control={form.control}
+                name="managerName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Manager Name*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="write managers name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="managerPhoneNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Managers PhonNo*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="write managers phone no." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password*</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Write your password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Description */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Write your address here"
+                      placeholder="write a bit about your team"
                       className="resize-none"
                       {...field}
                     />
@@ -216,69 +388,8 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Adhar Card */}
-            <FormField
-              control={form.control}
-              name="adharCard"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Adhar Card</FormLabel>
-                  <FormControl>
-                    <Input id="picture" type="file" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* Birth Certificate */}
 
-            <FormField
-              control={form.control}
-              name="birthCertificate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Birth Certificate</FormLabel>
-                  <FormControl>
-                    <Input id="picture" type="file" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            {/* Achievements */}
-            <FormField
-              control={form.control}
-              name="achievements"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Achievements</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter all of your achievements"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Documents */}
-            <FormField
-              control={form.control}
-              name="achievementDocument"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Document of Biggest achievement</FormLabel>
-                  <FormControl>
-                    <Input id="picture" type="file" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <Button type="submit" className="w-full mt-4">
               Submit
