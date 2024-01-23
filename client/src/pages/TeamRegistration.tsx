@@ -92,7 +92,7 @@ const TeamRegistration = () => {
                 <FormItem className=" w-full">
                   <FormLabel>Team Name*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} />
+                    <Input placeholder="Team name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
