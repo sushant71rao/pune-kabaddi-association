@@ -1,5 +1,4 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Form,
@@ -24,7 +23,7 @@ import {
 } from "@/components/ui/select";
 
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Trash } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 

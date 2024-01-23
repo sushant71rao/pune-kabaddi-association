@@ -1,5 +1,4 @@
 import { Button } from "../ui/button"
-import { ArrowBigRight, } from "lucide-react"
 import Heading from "../Heading"
 import MaxWidthWrapper from '../MaxWidthWrapper'
 import { Card, CardContent } from "../ui/card"
