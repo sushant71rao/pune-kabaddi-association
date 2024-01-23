@@ -261,33 +261,25 @@ const PlayerRegistration = () => {
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select a timezone" />
+                        <SelectValue placeholder="choose team" />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="est">
-                          Eastern Standard Time (EST)
+                          Pune warriors
                         </SelectItem>
                         <SelectItem value="cst">
-                          Central Standard Time (CST)
+                          Patna titans
                         </SelectItem>
                         <SelectItem value="mst">
-                          Mountain Standard Time (MST)
+                          Mumbai paltan
                         </SelectItem>
                         <SelectItem value="pst">
-                          Pacific Standard Time (PST)
+                          Jaipur kings
                         </SelectItem>
-                        <SelectItem value="akst">
-                          Alaska Standard Time (AKST)
-                        </SelectItem>
-                        <SelectItem value="hst">
-                          Hawaii Standard Time (HST)
-                        </SelectItem>
-                        <SelectItem value="clt">
-                          Chile Standard Time (CLT)
-                        </SelectItem>
+
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -337,7 +329,7 @@ const PlayerRegistration = () => {
                 control={form.control}
                 name="adharNumber"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="md:w-fit w-full">
                     <FormLabel>Enter Adhar Number*</FormLabel>
                     <FormControl>
                       <Input placeholder="Write your adhar number" {...field} />
@@ -351,7 +343,7 @@ const PlayerRegistration = () => {
                 control={form.control}
                 name="adharCard"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="md:w-auto w-full">
                     <FormLabel>Adhar Card</FormLabel>
                     <FormControl>
                       <Input id="picture" type="file" {...field} />
@@ -406,6 +398,7 @@ const PlayerRegistration = () => {
                       opacity: { duration: 0.2 },
                       height: { duration: 0.2 },
                     }}
+
                   >
                     <div key={index} className="flex flex-wrap gap-4">
                       <FormField
@@ -470,9 +463,10 @@ const PlayerRegistration = () => {
                 );
               })}
             </AnimatePresence>
+
             <div className="flex items-center justify-center mt-4">
               <Separator className="flex-[1]" />
-              <div className="mx-4">
+              <div className="flex flex-col gap-4 items-center justify-center md:flex-row">
                 <Button
                   type="button"
                   variant="outline"
