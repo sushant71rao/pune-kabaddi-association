@@ -79,4 +79,9 @@ const registerTeam = asyncHandler(async (req, res) => {
     )
 })
 
-export { registerTeam }
+const getAllTeams = asyncHandler(async (req, res) => {
+    const teams = await Team.find()
+    return res.status(201).json(new ApiResponse(200, teams, "successfully received all teams"))
+})
+
+export { registerTeam, getAllTeams }

@@ -1,5 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, useMutation } from '@tanstack/react-query'
 
 import {
   Form,
@@ -34,15 +35,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod"
 import { playerRegistrationSchema } from "@/schemas/playerRegistrationSchema";
+import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
+
 import { Button } from "@/components/ui/button";
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from "@/components/ui/separator";
 
+import axios from "axios"
+
 const formSchema = playerRegistrationSchema
 
+
+
+
+
 const PlayerRegistration = () => {
+
+
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,11 +80,25 @@ const PlayerRegistration = () => {
   form.watch();
 
 
-
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
     console.log("form submitted");
   };
+
+  const fetchTeamsQuery = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const response = await axios.get('/api/v1/teams/get-teams');
+      return response.data;
+    }
+  });
+
+
+
+
+
+
+
 
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
@@ -258,6 +284,7 @@ const PlayerRegistration = () => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
@@ -266,21 +293,20 @@ const PlayerRegistration = () => {
                     </FormControl>
                     <FormMessage />
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="est">
-                          Pune warriors
-                        </SelectItem>
-                        <SelectItem value="cst">
-                          Patna titans
-                        </SelectItem>
-                        <SelectItem value="mst">
-                          Mumbai paltan
-                        </SelectItem>
-                        <SelectItem value="pst">
-                          Jaipur kings
-                        </SelectItem>
 
-                      </SelectGroup>
+                      {fetchTeamsQuery.isPending ? <p>loading...</p> : fetchTeamsQuery.error ? <p>error while loading data </p> :
+                        (fetchTeamsQuery.data.data.map((item: z.infer<typeof teamRegistrationSchema>) => {
+                          return (
+                            <SelectItem value={item.teamName} key={item.email}>
+                              {item.teamName}
+                            </SelectItem>
+
+                          )
+                        }))
+                      }
+
+
+
                     </SelectContent>
                   </Select>
                 </FormItem>

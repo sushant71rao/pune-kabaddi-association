@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Team } from "../models/team.model.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -59,7 +60,6 @@ const loginUser = asyncHandler(async (req, res) => {
                 "user logged in successfully"
             ))
 })
-
 
 const registerUser = asyncHandler(async (req, res) => {
 
@@ -183,5 +183,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
 })
+
 
 export { registerUser, loginUser, logoutUser, refreshAccessToken }

@@ -9,9 +9,9 @@ const News = () => {
             <div className="flex flex-wrap gap-4 items-center justify-center">
                 {
                     [1, 2].map((item) => (
-                        <Card>
+                        <Card key={item}>
                             <a
-                                key={item}
+
                                 href="#"
                                 className="flex flex-col items-center bg-white   md:flex-row  rounded-lg"
                             >

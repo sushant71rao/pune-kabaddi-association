@@ -11,9 +11,8 @@ const Events = () => {
             <div className="flex flex-wrap gap-4 items-center justify-center  w-full ">
 
                 {[1, 2, 3].map((item) => (
-                    <Card>
+                    <Card key={item}>
                         <a
-                            key={item}
                             href="#"
                             className="max-w-80 flex flex-col bg-white overflow-hidden rounded-lg"
                         >
