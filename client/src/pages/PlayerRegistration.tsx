@@ -1,6 +1,8 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from '@tanstack/react-query'
+import axios from "axios"
+
 
 import {
   Form,
@@ -43,7 +45,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from "@/components/ui/separator";
 
-import axios from "axios"
 
 const formSchema = playerRegistrationSchema
 

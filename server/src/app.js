@@ -19,6 +19,10 @@ app.use(cookieParser())
 import userRouter from './routes/user.routes.js'
 import teamRouter from './routes/team.routes.js'
 
+
+// for file uploading
+app.use(express.urlencoded({ extended: false }))
+
 //routes declaration
 app.use('/api/v1/users', userRouter)
 

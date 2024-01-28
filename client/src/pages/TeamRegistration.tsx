@@ -1,5 +1,8 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+
 import {
   Form,
   FormControl,
@@ -46,20 +49,19 @@ const TeamRegistration = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      teamName: "",
-      email: "",
-      phoneNo: "",
-      logo: "", // Assuming logo is a file path or base64 representation
-      // startingYear: , // Assuming startingYear is a Date object
+      teamName: "ramlal",
+      email: "ramlal@gmail.com",
+      phoneNo: "7896587452",
       category: "",
-      ageGroup: "",
-      zone: "",
-      authorizedPersonName: "",
-      authorizedPersonPhoneNo: "",
-      managerName: "",
-      managerPhoneNo: "",
-      password: "",
-      description: "",
+      ageGroup: "juinior",
+      zone: "411 355",
+      authorizedPersonName: "tomm",
+      authorizedPersonPhoneNo: "7896857456",
+      managerName: "killer",
+      managerPhoneNo: "7896857453",
+      password: "rajesh@",
+      description: "noice",
+      logo: undefined,
     }
 
   });
@@ -67,10 +69,38 @@ const TeamRegistration = () => {
   form.watch();
 
 
+  const registerTeamMutation = useMutation({
+    mutationFn: async (teamData: z.infer<typeof formSchema>) => {
+      const formData = new FormData();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    console.log("form submitted");
+      for (const key in teamData) {
+        if (key === 'logo') {
+          const logoFile = teamData[key][0] as File;
+          formData.append(key, logoFile);
+        } else {
+          formData.append(key, teamData[key]);
+        }
+      }
+
+      try {
+        const response = await axios.post('/api/v1/teams/register-team', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        console.log('Team registered successfully:', response.data);
+      } catch (error) {
+        console.error('Error registering team:', error);
+      }
+    }
+  });
+
+  const fileRef = form.register('logo', { required: true });
+
+  const onSubmit = (teamData: z.infer<typeof formSchema>) => {
+    console.log(teamData)
+    registerTeamMutation.mutate(teamData);
   };
 
   return (
@@ -81,8 +111,8 @@ const TeamRegistration = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form} >
+          <form onSubmit={form.handleSubmit(onSubmit)} encType="multipart/form-data" className="space-y-8" >
 
             {/* Team Name */}
             <FormField
@@ -134,12 +164,13 @@ const TeamRegistration = () => {
             <FormField
               control={form.control}
               name="logo"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
-                  <FormLabel>Team Logo*</FormLabel>
+                  <FormLabel>Team Logo</FormLabel>
                   <FormControl>
-                    <Input id="avatar" type="file" {...field} />
+                    <Input type="file"   {...fileRef} />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
