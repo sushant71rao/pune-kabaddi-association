@@ -75,10 +75,20 @@ const TeamRegistration = () => {
 
       for (const key in teamData) {
         if (key === 'logo') {
-          const logoFile = teamData[key][0] as File;
+          const logoFile = (teamData[key] as FileList)[0];
           formData.append(key, logoFile);
         } else {
-          formData.append(key, teamData[key]);
+          // Use keyof to ensure that key is a valid property of teamData
+          const validKey = key as keyof typeof teamData;
+          const value = teamData[validKey];
+
+          if (validKey === 'startingYear' && value instanceof Date) {
+            formData.append(validKey, value.toISOString());
+          } else if (typeof value === 'string' || typeof value === 'number') {
+            formData.append(validKey, value.toString());
+          } else {
+            console.warn(`Unsupported type for field '${validKey}'`);
+          }
         }
       }
 
@@ -417,9 +427,6 @@ const TeamRegistration = () => {
                 </FormItem>
               )}
             />
-
-
-
 
             <Button type="submit" className="w-full mt-4">
               Submit
