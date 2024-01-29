@@ -24,33 +24,32 @@ const Header = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [prevScrollPos, visible]);
-  
+
 
   return (
     <>
-    <header
-      className={`w-full bg-white border-b p-4 fixed top-0 transition-transform ${
-        visible ? 'translate-y-0' : '-translate-y-full'
-      }`}
-    >
-      <div className="wrapper flex items-center justify-between">
-        <div className="w-36">
-          <img src="/assets/logo.png" width={80} height={38} alt="logo" />
-        </div>
+      <header
+        className={`z-10 w-full bg-white border-b p-4 fixed top-0 transition-transform ${visible ? 'translate-y-0' : '-translate-y-full'
+          }`}
+      >
+        <div className="wrapper flex items-center justify-between">
+          <div className="w-36">
+            <img src="/assets/logo.png" width={80} height={38} alt="logo" />
+          </div>
 
-        <nav className="md:flex md:flex-between hidden w-full max-w-xl">
-          <NavItems />
-        </nav>
+          <nav className="md:flex md:flex-between hidden w-full max-w-xl">
+            <NavItems />
+          </nav>
 
-        <div className="flex w-32 justify-end gap-3">
-          <Button asChild className="rounded-full" size="lg">
-            <Link to="/register">Login</Link>
-          </Button>
-          <MobileNav />
+          <div className="flex w-32 justify-end gap-3">
+            <Button asChild className="rounded-full" size="lg">
+              <Link to="/register">Login</Link>
+            </Button>
+            <MobileNav />
+          </div>
         </div>
-      </div>
-    </header>
-    <Outlet/>
+      </header>
+      <Outlet />
     </>
   );
 };

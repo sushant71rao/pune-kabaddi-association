@@ -150,7 +150,6 @@ const TeamRegistration = () => {
 
 
   };
-  console.log(registerTeamMutation)
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>

@@ -1,3 +1,4 @@
+import AccordionFAQ from "@/components/home/AccordionFAQ"
 import Events from "@/components/home/Events"
 import Hero from "@/components/home/Hero"
 import News from "@/components/home/News"
@@ -13,6 +14,7 @@ const Home = () => {
       <News />
       <Events />
       <TeamsCarousel />
+      <AccordionFAQ />
     </div>
   )
 }
