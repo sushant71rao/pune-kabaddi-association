@@ -124,7 +124,7 @@ const TeamRegistration = () => {
     onError: (error) => {
       toast({
         variant: 'destructive',
-        title: 'Registration Failed !',
+        title: 'Registration Failed !!',
         description: `${error}`,
       });
     },

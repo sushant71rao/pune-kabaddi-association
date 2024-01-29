@@ -32,11 +32,11 @@ const registerTeam = asyncHandler(async (req, res) => {
     }
 
     const existedUser = await Team.findOne({
-        $or: [{ phoneNo }, { email }]
+        $or: [{ teamName }, { email }]
     })
 
     if (existedUser) {
-        throw new ApiError(409, "team with email or phone number all ready exists")
+        throw new ApiError(409, "team name or email all ready exists")
     }
 
     const logoLocalPath = req.files?.logo[0]?.path;
