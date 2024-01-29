@@ -6,6 +6,8 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 
 const registerTeam = asyncHandler(async (req, res) => {
 
+    res.setHeader('Content-Type', 'application/json');
+
     const {
         teamName,
         email,

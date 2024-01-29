@@ -42,9 +42,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from "@/components/ui/textarea";
 import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
+import { useToast } from "@/components/ui/use-toast"
+
+
 const formSchema = teamRegistrationSchema
 
+
+
 const TeamRegistration = () => {
+
+  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,8 +60,8 @@ const TeamRegistration = () => {
       email: "ramlal@gmail.com",
       phoneNo: "7896587452",
       category: "",
-      ageGroup: "juinior",
-      zone: "411 355",
+      ageGroup: "",
+      zone: "",
       authorizedPersonName: "tomm",
       authorizedPersonPhoneNo: "7896857456",
       managerName: "killer",
@@ -68,9 +75,8 @@ const TeamRegistration = () => {
 
   form.watch();
 
-
-  const registerTeamMutation = useMutation({
-    mutationFn: async (teamData: z.infer<typeof formSchema>) => {
+  const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
+    {
       const formData = new FormData();
 
       for (const key in teamData) {
@@ -99,20 +105,52 @@ const TeamRegistration = () => {
           }
         });
 
-        console.log('Team registered successfully:', response.data);
+        return response.data
+
       } catch (error) {
-        console.error('Error registering team:', error);
+
+        if (axios.isAxiosError(error) && error.response?.status === 409) {
+          throw new Error('Team Name or Email already exists');
+        } else {
+          throw new Error('Team registration failed. Please try again.');
+        }
       }
     }
+  }
+
+  const registerTeamMutation = useMutation({
+    mutationKey: ['registerTeam'],
+    mutationFn: registerTeam,
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Registration Failed !',
+        description: `${error}`,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Team Registered Successfully',
+      });
+    }
+
   });
+
 
   const fileRef = form.register('logo', { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
+
+
     console.log(teamData)
     registerTeamMutation.mutate(teamData);
-  };
 
+
+
+  };
+  console.log(registerTeamMutation)
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
@@ -428,9 +466,12 @@ const TeamRegistration = () => {
               )}
             />
 
-            <Button type="submit" className="w-full mt-4">
-              Submit
+            <Button type="submit" className="w-full mt-4" disabled={registerTeamMutation.isPending}>
+              {registerTeamMutation.isPending ? (<>Submitting <img src="/assets/loading.svg" alt="loading" className="w-6 h-6 ml-4" /> </>) : 'Submit'}
+
             </Button>
+
+            <p className="text-red-600 font-semibold">{registerTeamMutation.error && registerTeamMutation.error?.message} </p>
           </form>
         </Form>
       </CardContent>

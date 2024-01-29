@@ -31,9 +31,9 @@ export const teamRegistrationSchema = z.object({
     ),
 
   startingYear: z.date({ required_error: "Date is required" }),
-  category: z.string({ required_error: "Category is required." }),
-  ageGroup: z.string({ required_error: "Age Group is required." }),
-  zone: z.string({ required_error: "Zone is required." }),
+  category: z.string()?.min(1, { message: "Category is required." }),
+  ageGroup: z.string()?.min(1, { message: "Age Group is required." }),
+  zone: z.string()?.min(1, { message: "Please provide a value" }),
 
   authorizedPersonName: z
     .string({ required_error: "Team Name is required." })
