@@ -9,35 +9,56 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 export const playerRegistrationSchema = z.object({
-  firstName: z.string({ required_error: "First Name is required" }),
-  middleName: z.string({ required_error: "Middle Name is required" }),
-  lastName: z.string({ required_error: "Last Name is required" }),
+  firstName: z
+    .string()
+    .min(2, { message: "First Name should be min 2 characters" }),
+  middleName: z
+    .string()
+    .min(2, { message: "Middle Name should be min 2 characters" }),
+  lastName: z
+    .string()
+    .min(2, { message: "Last Name should be min 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
   phoneNo: z.string().min(10, { message: "Invalid phone number." }),
-  avatar: z
-    .any()
-    .refine((files) => files?.length == 1, "Image is required.")
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, .png and .webp files are accepted."
-    ),
+  avatar: z.any(),
+  // .refine((files) => files?.length == 1, "Image is required.")
+  // .refine(
+  //   (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+  //   `Max file size is 5MB.`
+  // )
+  // .refine(
+  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+  //   ".jpg, .jpeg, .png and .webp files are accepted."
+  // ),
   birthDate: z.date({ required_error: "Birth Date is required" }),
   gender: z.string().refine((value) => ["m", "f"].includes(value), {
     message: "Invalid gender.",
   }),
-  teamName: z.string({ required_error: "Team Name is required." }),
-  playingPosition: z.string({
-    required_error: "Playing Position is required.",
+  teamName: z.string().min(1, { message: "Team Name is required." }),
+  playingPosition: z.string().min(1, {
+    message: "Playing Position is required.",
   }),
   adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
-  adharCard: z.string({ required_error: "Adhar card is required" }), // Assuming adharCard is a file path or base64 representation
-  birthCertificate: z.string({
-    required_error: "Birth certificate is required",
-  }), // Assuming birthCertificate is a file path or base64 representation
+  adharCard: z.any(),
+  // .refine((files) => files?.length == 1, "Image is required.")
+  // .refine(
+  //   (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+  //   `Max file size is 5MB.`
+  // )
+  // .refine(
+  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+  //   ".jpg, .jpeg, .png and .webp files are accepted."
+  // ),
+  birthCertificate: z.any(),
+  // .refine((files) => files?.length == 1, "Image is required.")
+  // .refine(
+  //   (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+  //   `Max file size is 5MB.`
+  // )
+  // .refine(
+  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+  //   ".jpg, .jpeg, .png and .webp files are accepted."
+  // ),
   password: z
     .string()
     .min(8, { message: "Password must be at least 5 characters." }),

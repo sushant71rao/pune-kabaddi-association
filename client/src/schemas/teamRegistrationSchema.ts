@@ -21,6 +21,7 @@ export const teamRegistrationSchema = z.object({
 
   logo: z
     .any()
+    .refine((files) => files?.length == 1, "Image is required.")
     .refine(
       (file) => file?.[0]?.size <= MAX_FILE_SIZE,
       `Max image size is 5MB.`

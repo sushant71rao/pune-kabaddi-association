@@ -7,6 +7,7 @@ import axios from "axios"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { format } from "date-fns";
+import { differenceInYears, format } from "date-fns";
 import { CalendarIcon, Plus, Trash } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 
 const formSchema = playerRegistrationSchema
@@ -60,25 +62,54 @@ const PlayerRegistration = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phoneNo: "",
+      firstName: "rutwik",
+      middleName: "babaji",
+      lastName: "shinde",
+      email: "rutwik@gmail.com",
+      phoneNo: "7896587458",
       avatar: "",
       // birthDate: null, // Assuming birthDate is a Date object
-      gender: "",
-      teamName: "",
-      playingPosition: "",
-      adharNumber: "",
+      gender: "m",
+      teamName: "rakul",
+      playingPosition: "back",
+      adharNumber: "789632587452",
       adharCard: "",
       birthCertificate: "",
-      password: "",
+      password: "nopassword",
       achievements: [{ achievementYear: "", achievementTitle: "", achievementDocument: "" }]
     },
   });
 
   form.watch();
+
+
+  const [openAge, setOpenAge] = useState<boolean | undefined>(false)
+  const [date, setDate] = useState<Date>()
+
+
+  const calculateAge = (selectedDate: Date | Date[] | undefined) => {
+    if (selectedDate) {
+      const currentDate = new Date();
+      const userSelectedDate = Array.isArray(selectedDate) ? selectedDate[0] : selectedDate;
+
+      const calculatedAge = differenceInYears(currentDate, userSelectedDate)
+
+      if (calculatedAge >= 19) {
+        setOpenAge(true)
+      }
+      else {
+        setOpenAge(false)
+      }
+
+    }
+    else {
+      setOpenAge(false)
+    }
+  }
+
+  console.log(openAge)
+
+
 
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -93,12 +124,6 @@ const PlayerRegistration = () => {
       return response.data;
     }
   });
-
-
-
-
-
-
 
 
   return (
@@ -121,7 +146,7 @@ const PlayerRegistration = () => {
                   <FormItem className="md:w-fit w-full">
                     <FormLabel>First Name*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
+                      <Input placeholder="First name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -207,35 +232,27 @@ const PlayerRegistration = () => {
                   <FormLabel>Date of birth*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick birth date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn("w-[240px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent align="start" className=" w-auto p-0">
                       <Calendar
                         mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
+                        captionLayout="dropdown-buttons"
+                        selected={date}
+                        onSelect={(date) => { setDate(date); calculateAge(date); field.onChange(date); }}
+                        fromYear={1960}
+                        toYear={2030}
+
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormDescription>Please check the date once again.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -382,19 +399,22 @@ const PlayerRegistration = () => {
             </div>
 
             {/* Birth Certificate */}
-            <FormField
-              control={form.control}
-              name="birthCertificate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Birth Certificate*</FormLabel>
-                  <FormControl>
-                    <Input id="picture" type="file" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {
+              !openAge ? <FormField
+                control={form.control}
+                name="birthCertificate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Birth Certificate*</FormLabel>
+                    <FormControl>
+                      <Input {...(!openAge && { required: true })} id="picture" type="file" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> : <></>
+            }
+
 
             {/* Password */}
             <FormField
