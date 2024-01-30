@@ -97,6 +97,13 @@ export const columns: ColumnDef<Person>[] = [
                 navigator.clipboard.writeText(person.first_name.toString());
               }}
             >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(person.first_name.toString());
+              }}
+            >
               Copy person name
             </DropdownMenuItem>
           </DropdownMenuContent>
