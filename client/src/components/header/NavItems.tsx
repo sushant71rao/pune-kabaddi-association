@@ -8,7 +8,7 @@ const NavItems = () => {
     <ul className="md:flex-between md:items-center md:justify-center flex w-full flex-col items-start gap-5 md:flex-row">
       {headerLinks.map((link) => {
         return (
-          <li key={link.label}>
+          <li key={Math.random()}>
             <NavLink
               to={link.route}
               className={({ isActive }) =>

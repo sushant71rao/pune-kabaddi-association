@@ -1,4 +1,3 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import { Person } from "../../../constants/people";
 import { ColumnDef } from "@tanstack/react-table";
@@ -83,7 +82,7 @@ export const columns: ColumnDef<Person>[] = [
     id: "actions",
     cell: ({ row }) => {
       const person = row.original;
-      const personId = person.id;
+      // const personId = person.id;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

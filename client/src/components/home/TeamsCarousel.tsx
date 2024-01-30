@@ -30,8 +30,8 @@ export function TeamsCarousel() {
         className="sm:w-full w-56 mx-auto"
       >
         <CarouselContent>
-          {Array.from({ length: 20 }).map((_, index) => (
-            <CarouselItem key={index} className="md:basis-1/4 lg:basis-1/6 sm:basis-1/3 basis-1/2">
+          {Array.from({ length: 20 }).map((_) => (
+            <CarouselItem key={Math.random()} className="md:basis-1/4 lg:basis-1/6 sm:basis-1/3 basis-1/2">
               <div >
                 <Card >
                   <CardContent className="flex aspect-square items-center justify-center p-0 object-contain">

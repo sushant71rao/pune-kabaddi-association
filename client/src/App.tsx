@@ -10,23 +10,29 @@ import TeamRegistration from "./pages/TeamRegistration";
 import Players from "./pages/Players";
 import Officials from "./pages/Officials";
 import Teams from "./pages/Teams";
+import Footer from "./components/Footer";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Header />}>
-        <Route path="/register" element={<Register />} />
-        <Route index element={<Home />} />
-        <Route path="/player-registration" element={<PlayerRegistration />} />
-        <Route path="/official-registration" element={<OfficialRegistration />} />
-        <Route path="/team-registration" element={<TeamRegistration />} />
+      <Route path="*" element={<>
+        <Header />
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route index element={<Home />} />
+          <Route path="/player-registration" element={<PlayerRegistration />} />
+          <Route path="/official-registration" element={<OfficialRegistration />} />
+          <Route path="/team-registration" element={<TeamRegistration />} />
 
-        <Route path="admin/players" element={<Players />} />
-        <Route path="admin/officials" element={<Officials />} />
-        <Route path="admin/teams" element={<Teams />} />
+          <Route path="admin/players" element={<Players />} />
+          <Route path="admin/officials" element={<Officials />} />
+          <Route path="admin/teams" element={<Teams />} />
+        </Routes>
+        <Footer />
 
-
+      </>}>
       </Route>
+
     </Routes>
   );
 }
