@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import axios from "axios"
 
 
@@ -50,7 +50,7 @@ import { useState } from "react";
 
 const formSchema = playerRegistrationSchema
 
-
+import { useToast } from "@/components/ui/use-toast"
 
 
 
@@ -62,16 +62,16 @@ const PlayerRegistration = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "rutwik",
-      middleName: "babaji",
-      lastName: "shinde",
+      firstName: "Rutwik",
+      middleName: "Babaji",
+      lastName: "Shinde",
       email: "rutwik@gmail.com",
       phoneNo: "7896587458",
       avatar: "",
       // birthDate: null, // Assuming birthDate is a Date object
       gender: "m",
-      teamName: "rakul",
-      playingPosition: "back",
+      teamName: "",
+      playingSkill: "raider",
       adharNumber: "789632587452",
       adharCard: "",
       birthCertificate: "",
@@ -81,6 +81,92 @@ const PlayerRegistration = () => {
   });
 
   form.watch();
+
+  const registerPlayer = async (playerData: z.infer<typeof formSchema>) => {
+    {
+      const formData = new FormData();
+
+      for (const key in playerData) {
+        if (key === 'adharCard') {
+          const adharCardFile = (playerData[key] as FileList)[0];
+          formData.append(key, adharCardFile);
+        }
+        else if (key == 'avatar') {
+          const avatarFile = (playerData[key] as FileList)[0];
+          formData.append(key, avatarFile)
+        }
+        else if (key == 'birthCertificate') {
+          const birthCertificateFile = (playerData[key] as FileList)[0];
+          formData.append(key, birthCertificateFile)
+        }
+        // else if(key =='achievementDocument'){
+        //   const achievementDocumentFile = (playerData[key] as FileList)[0];
+        //   formData.append(key, achievementDocumentFile)
+        // } 
+        else {
+          // Use keyof to ensure that key is a valid property of playerData
+          const validKey = key as keyof typeof playerData;
+          const value = playerData[validKey];
+
+          if (validKey === 'birthDate' && value instanceof Date) {
+            formData.append(validKey, value.toISOString());
+          } else if (typeof value === 'string' || typeof value === 'number') {
+            formData.append(validKey, value.toString());
+          } else {
+            console.warn(`Unsupported type for field '${validKey}'`);
+          }
+        }
+      }
+
+      try {
+        const response = await axios.post('/api/v1/players/register-player', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        return response.data
+
+      } catch (error) {
+
+        if (axios.isAxiosError(error) && error.response?.status === 409) {
+          throw new Error('Player Email already exists');
+        } else {
+          throw new Error('Player registration failed. Please try again.');
+        }
+      }
+    }
+  }
+
+  const { toast } = useToast()
+
+  const fetchTeamsQuery = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const response = await axios.get('/api/v1/teams/get-teams');
+      return response.data;
+    }
+  });
+
+  const registerPlayerMutation = useMutation({
+    mutationKey: ['registerPlayer'],
+    mutationFn: registerPlayer,
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Registration Failed !!',
+        description: `${error}`,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Player Registered Successfully',
+      });
+    }
+
+  });
 
 
   const [openAge, setOpenAge] = useState<boolean | undefined>(false)
@@ -107,24 +193,15 @@ const PlayerRegistration = () => {
     }
   }
 
-  console.log(openAge)
+  const avatarFileRef = form.register('avatar', { required: true });
+  const adharCardFileRef = form.register('adharCard', { required: true });
+  const birthCertificateFileRef = form.register('birthCertificate');
+  const achievementDocumentFileRef = form.register('achievements.0.achievementDocument');
 
-
-
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    console.log("form submitted");
+  const onSubmit = (playerData: z.infer<typeof formSchema>) => {
+    console.log(playerData)
+    registerPlayerMutation.mutate(playerData);
   };
-
-  const fetchTeamsQuery = useQuery({
-    queryKey: ['teams'],
-    queryFn: async () => {
-      const response = await axios.get('/api/v1/teams/get-teams');
-      return response.data;
-    }
-  });
-
 
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
@@ -212,11 +289,11 @@ const PlayerRegistration = () => {
             <FormField
               control={form.control}
               name="avatar"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Profile Photo*</FormLabel>
                   <FormControl>
-                    <Input id="avatar" type="file" {...field} />
+                    <Input id="avatar" type="file" {...avatarFileRef} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -334,10 +411,10 @@ const PlayerRegistration = () => {
             {/* Playing Position */}
             <FormField
               control={form.control}
-              name="playingPosition"
+              name="playingSkill"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Playing Position*</FormLabel>
+                  <FormLabel>Playing Skill*</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}
@@ -390,7 +467,7 @@ const PlayerRegistration = () => {
                   <FormItem className="md:w-auto w-full">
                     <FormLabel>Adhar Card</FormLabel>
                     <FormControl>
-                      <Input id="picture" type="file" {...field} />
+                      <Input id="picture" type="file" {...adharCardFileRef} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -403,11 +480,11 @@ const PlayerRegistration = () => {
               !openAge ? <FormField
                 control={form.control}
                 name="birthCertificate"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
-                    <FormLabel>Birth Certificate*</FormLabel>
+                    <FormLabel>Birth Certificate OR Bonafide Certificate*</FormLabel>
                     <FormControl>
-                      <Input {...(!openAge && { required: true })} id="picture" type="file" {...field} />
+                      <Input {...(!openAge && { required: true })} id="picture" type="file" {...birthCertificateFileRef} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -489,7 +566,7 @@ const PlayerRegistration = () => {
                       <FormField
                         control={form.control}
                         name={`achievements.${index}.achievementDocument`}
-                        render={({ field }) => {
+                        render={() => {
                           return (
                             <FormItem className="md:w-1/3 w-full">
                               <FormLabel >
@@ -498,7 +575,7 @@ const PlayerRegistration = () => {
                               <FormControl >
                                 <Input
                                   type="file"
-                                  {...field}
+                                  {...achievementDocumentFileRef}
                                 />
                               </FormControl>
                             </FormItem>
@@ -545,9 +622,11 @@ const PlayerRegistration = () => {
             </div>
 
 
-            <Button type="submit" className="w-full mt-4">
-              Submit
+            <Button type="submit" className="w-full mt-4" disabled={registerPlayerMutation.isPending}>
+              {registerPlayerMutation.isPending ? (<>Submitting <img src="/assets/loading.svg" alt="loading" className="w-6 h-6 ml-4" /> </>) : 'Submit'}
+
             </Button>
+            <p className="text-red-600 font-semibold">{registerPlayerMutation.error && registerPlayerMutation.error?.message} </p>
           </form>
         </Form>
       </CardContent>

@@ -16,16 +16,16 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 // import routes
-import userRouter from './routes/user.routes.js'
 import teamRouter from './routes/team.routes.js'
+import playerRouter from './routes/player.routes.js'
 
 
 // for file uploading
 app.use(express.urlencoded({ extended: false }))
 
 //routes declaration
-app.use('/api/v1/users', userRouter)
 
 app.use('/api/v1/teams', teamRouter)
+app.use('/api/v1/players', playerRouter)
 
 export { app }

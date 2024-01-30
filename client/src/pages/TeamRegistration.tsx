@@ -147,8 +147,6 @@ const TeamRegistration = () => {
     console.log(teamData)
     registerTeamMutation.mutate(teamData);
 
-
-
   };
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
