@@ -86,8 +86,6 @@ const registerPlayer = asyncHandler(async (req, res) => {
         email
     })
 
-    console.log(existedPlayer)
-
     if (existedPlayer) {
         throw new ApiError(409, "player with email all ready exists")
     }
@@ -125,6 +123,7 @@ const registerPlayer = asyncHandler(async (req, res) => {
         birthCertificate: birthCertificate?.url || "",
         email,
         birthDate,
+        firstName,
         middleName,
         lastName,
         phoneNo,

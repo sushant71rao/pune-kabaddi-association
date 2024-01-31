@@ -3,6 +3,7 @@
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -38,37 +39,119 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { officialRegistrationSchema } from "@/schemas/OfficialRegistrationSchema";
+import { useState } from "react";
 
 const formSchema = officialRegistrationSchema
 
+import { useToast } from "@/components/ui/use-toast"
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+
+
 const OfficialRegistration = () => {
+
+    const [date, setDate] = useState<Date | undefined>()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            email: "",
-            phoneNo: "",
-            passingYear: "",
-            avatar: "",
-            // birthDate: new Date(),
-            gender: "",
-            adharNumber: "",
-            adharCard: "",
-            password: "",
+            firstName: "Rakesh",
+            middleName: "Bhim",
+            lastName: "kumar",
+            email: "rakehs@gmail.com",
+            phoneNo: "8965874596",
+            passingYear: "2300",
+            gender: "m",
+            adharNumber: "7896587456",
+            password: "toosecure",
         }
     })
 
     form.watch();
 
+    const { toast } = useToast()
 
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
-        console.log("form submitted");
+    const registerOfficial = async (officialData: z.infer<typeof formSchema>) => {
+        {
+            const formData = new FormData();
+
+            for (const key in officialData) {
+                if (key === 'adharCard') {
+                    const adharCardFile = (officialData[key] as FileList)[0];
+                    formData.append(key, adharCardFile);
+                }
+                else if (key == 'avatar') {
+                    const avatarFile = (officialData[key] as FileList)[0];
+                    formData.append(key, avatarFile)
+                }
+                else if (key == 'passingCertificate') {
+                    const passingCertificateFile = (officialData[key] as FileList)[0];
+                    formData.append(key, passingCertificateFile)
+                }
+                else {
+                    const validKey = key as keyof typeof officialData;
+                    const value = officialData[validKey];
+
+                    if (validKey === 'birthDate' && value instanceof Date) {
+                        formData.append(validKey, value.toISOString());
+                    } else if (typeof value === 'string' || typeof value === 'number') {
+                        formData.append(validKey, value.toString());
+                    } else {
+                        console.warn(`Unsupported type for field '${validKey}'`);
+                    }
+                }
+            }
+
+            try {
+                const response = await axios.post('/api/v1/officials/register-official', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                return response.data
+
+            } catch (error) {
+
+                if (axios.isAxiosError(error) && error.response?.status === 409) {
+                    throw new Error('Player Email already exists');
+                } else {
+                    throw new Error('Player registration failed. Please try again.');
+                }
+            }
+        }
+    }
+
+    const registerOfficialMutation = useMutation({
+        mutationKey: ['registerOfficial'],
+        mutationFn: registerOfficial,
+        onError: (error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Registration Failed !!',
+                description: `${error}`,
+            });
+        },
+        onSuccess: () => {
+            toast({
+                variant: 'default',
+                title: 'Success',
+                description: 'Player Registered Successfully',
+            });
+        }
+
+    });
+
+
+    const onSubmit = (officialData: z.infer<typeof formSchema>) => {
+        console.log(officialData)
+        registerOfficialMutation.mutate(officialData);
     };
+
+    const avatarFileRef = form.register('avatar', { required: true });
+    const adharCardFileRef = form.register('adharCard', { required: true });
+    const passingCertificateFileRef = form.register('passingCertificate');
 
     return (
         <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
@@ -152,30 +235,16 @@ const OfficialRegistration = () => {
                             )}
                         />
 
-                        {/* Phone Number */}
-                        <FormField
-                            control={form.control}
-                            name="passingYear"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Passing Year*</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Write your passing year" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
                         {/* Avatar */}
                         <FormField
                             control={form.control}
                             name="avatar"
-                            render={({ field }) => (
+                            render={() => (
                                 <FormItem>
                                     <FormLabel>Profile Photo*</FormLabel>
                                     <FormControl>
-                                        <Input id="avatar" type="file" {...field} />
+                                        <Input id="avatar" type="file" {...avatarFileRef} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -191,35 +260,27 @@ const OfficialRegistration = () => {
                                     <FormLabel>Date of birth*</FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[240px] pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick birth date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn("w-[240px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                            </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent align="start" className=" w-auto p-0">
                                             <Calendar
                                                 mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date > new Date() || date < new Date("1900-01-01")
-                                                }
-                                                initialFocus
+                                                captionLayout="dropdown-buttons"
+                                                selected={date}
+                                                onSelect={(date) => { setDate(date); field.onChange(date); }}
+                                                fromYear={1960}
+                                                toYear={2030}
+
                                             />
                                         </PopoverContent>
                                     </Popover>
+                                    <FormDescription>Please check the date once again.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -258,9 +319,40 @@ const OfficialRegistration = () => {
                             )}
                         />
 
+                        {/* Passing Year */}
+                        <FormField
+                            control={form.control}
+                            name="passingYear"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Passing Year*</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Write your passing year" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Passing Certificate */}
+                        <FormField
+                            control={form.control}
+                            name="passingCertificate"
+                            render={() => (
+                                <FormItem>
+                                    <FormLabel>Passing Certificate</FormLabel>
+                                    <FormControl>
+                                        <Input id="picture" type="file" {...passingCertificateFileRef} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
 
-                        {/* Adhar Card */}
+
+
+                        {/* Adhar Number and Card */}
                         <div className="flex gap-4 flex-wrap">
                             <FormField
                                 control={form.control}
@@ -279,19 +371,17 @@ const OfficialRegistration = () => {
                             <FormField
                                 control={form.control}
                                 name="adharCard"
-                                render={({ field }) => (
+                                render={() => (
                                     <FormItem>
                                         <FormLabel>Adhar Card</FormLabel>
                                         <FormControl>
-                                            <Input id="picture" type="file" {...field} />
+                                            <Input id="picture" type="file" {...adharCardFileRef} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-
-
 
                         {/* Password */}
                         <FormField
@@ -310,10 +400,13 @@ const OfficialRegistration = () => {
 
 
 
-                        <Button type="submit" className="w-full mt-4">
-                            Submit
+                        <Button type="submit" className="w-full mt-4" disabled={registerOfficialMutation.isPending}>
+                            {registerOfficialMutation.isPending ? (<>Submitting <img src="/assets/loading.svg" alt="loading" className="w-6 h-6 ml-4" /> </>) : 'Submit'}
+
                         </Button>
+                        <p className="text-red-600 font-semibold">{registerOfficialMutation.error && registerOfficialMutation.error?.message} </p>
                     </form>
+
                 </Form>
             </CardContent>
         </Card>

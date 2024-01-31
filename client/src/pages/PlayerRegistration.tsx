@@ -57,7 +57,8 @@ import { useToast } from "@/components/ui/use-toast"
 const PlayerRegistration = () => {
 
 
-
+  const [openAge, setOpenAge] = useState<boolean | undefined>(false)
+  const [date, setDate] = useState<Date | undefined>()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -167,10 +168,6 @@ const PlayerRegistration = () => {
     }
 
   });
-
-
-  const [openAge, setOpenAge] = useState<boolean | undefined>(false)
-  const [date, setDate] = useState<Date>()
 
 
   const calculateAge = (selectedDate: Date | Date[] | undefined) => {
@@ -463,7 +460,7 @@ const PlayerRegistration = () => {
               <FormField
                 control={form.control}
                 name="adharCard"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="md:w-auto w-full">
                     <FormLabel>Adhar Card</FormLabel>
                     <FormControl>

@@ -18,7 +18,7 @@ app.use(cookieParser())
 // import routes
 import teamRouter from './routes/team.routes.js'
 import playerRouter from './routes/player.routes.js'
-
+import officialRouter from './routes/official.routes.js'
 
 // for file uploading
 app.use(express.urlencoded({ extended: false }))
@@ -27,5 +27,6 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/v1/teams', teamRouter)
 app.use('/api/v1/players', playerRouter)
+app.use('/api/v1/officials', officialRouter)
 
 export { app }
