@@ -71,7 +71,8 @@ const officialSchema = new mongoose.Schema({
         type: String,
         minlength: [8, 'Password must be at least 8 characters.'],
     },
-});
+},
+    { timestamps: true });
 
 export const Official = mongoose.model(
     'Official',

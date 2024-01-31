@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Person } from "../../../constants/people";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
@@ -11,7 +10,20 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const columns: ColumnDef<Person>[] = [
+
+type Player = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  teamName: string,
+  gender: string,
+  phoneNo: string,
+  dateOfBirth: Date,
+
+}
+
+
+export const columns: ColumnDef<Player>[] = [
   {
     id: "select",
     header: ({ table }) => {
@@ -38,6 +50,10 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: false,
   },
   {
+    header: "ID",
+    accessorKey: "_id",
+  },
+  {
     header: ({ column }) => {
       return (
         <Button
@@ -46,34 +62,48 @@ export const columns: ColumnDef<Person>[] = [
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
         >
-          Person ID
+          First Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    accessorKey: "id",
-  },
-  {
-    header: "First Name",
-    accessorKey: "first_name",
+    accessorKey: "firstName",
   },
   {
     header: "Last Name",
-    accessorKey: "last_name",
+    accessorKey: "lastName",
   },
   {
     header: "Email",
     accessorKey: "email",
+
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    header: "Phone No",
+    accessorKey: "phoneNo",
   },
   {
     header: "Gender",
     accessorKey: "gender",
   },
   {
-    header: "Date of Birth",
-    accessorKey: "date_of_birth",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            column.toggleSorting(column.getIsSorted() === "asc");
+          }}
+        >
+          Date of Birth
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    accessorKey: "birthDate",
     cell: ({ row }) => {
-      const date_of_birth = row.getValue("date_of_birth");
+      const date_of_birth = row.getValue("birthDate");
       const formatted = new Date(date_of_birth as string).toLocaleDateString();
       return <div className="font-medium">{formatted}</div>;
     },
@@ -94,14 +124,14 @@ export const columns: ColumnDef<Person>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(person.first_name.toString());
+                navigator.clipboard.writeText(person.email.toString());
               }}
             >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(person.first_name.toString());
+                navigator.clipboard.writeText(person.email.toString());
               }}
             >
               Copy person name

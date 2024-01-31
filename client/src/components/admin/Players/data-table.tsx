@@ -1,4 +1,4 @@
-"use client";
+
 
 import {
     ColumnDef,
@@ -78,12 +78,12 @@ export function PeopleDataTable<TData, TValue>({
             {/* input */}
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter First names"
+                    placeholder="Filter Emails"
                     value={
-                        (table.getColumn("first_name")?.getFilterValue() as string) || ""
+                        (table.getColumn("email")?.getFilterValue() as string) || ""
                     }
                     onChange={(e) => {
-                        table.getColumn("first_name")?.setFilterValue(e.target.value);
+                        table.getColumn("email")?.setFilterValue(e.target.value);
                     }}
                     className="max-w-sm"
                 />

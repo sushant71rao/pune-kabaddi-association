@@ -63,6 +63,8 @@ const loginPlayer = asyncHandler(async (req, res) => {
 
 const registerPlayer = asyncHandler(async (req, res) => {
 
+    res.setHeader('Content-Type', 'application/json');
+
     const { firstName,
         middleName,
         lastName,
@@ -146,6 +148,12 @@ const registerPlayer = asyncHandler(async (req, res) => {
     )
 })
 
+const getAllPlayers = asyncHandler(async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    const players = await Player.find()
+    return res.status(201).json(new ApiResponse(200, players, "successfully fetched all players"))
+})
+
 
 const logoutPlayer = asyncHandler(async (req, res) => {
     await Player.findByIdAndUpdate(
@@ -221,4 +229,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 
-export { registerPlayer, loginPlayer, logoutPlayer, refreshAccessToken }
+export { registerPlayer, getAllPlayers, loginPlayer, logoutPlayer, refreshAccessToken }

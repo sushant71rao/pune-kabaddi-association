@@ -16,6 +16,7 @@ const playerSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        required: true,
         unique: true,
         validate: {
             validator: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
@@ -76,7 +77,7 @@ const playerSchema = new mongoose.Schema({
             },
         },
     ],
-});
+}, { timestamps: true });
 
 
 playerSchema.pre("save", async function (next) {

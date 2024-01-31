@@ -143,10 +143,16 @@ const PlayerRegistration = () => {
 
   const fetchTeamsQuery = useQuery({
     queryKey: ['teams'],
-    queryFn: async () => {
-      const response = await axios.get('/api/v1/teams/get-teams');
-      return response.data;
-    }
+    queryFn:
+      async () => {
+        try {
+          const response = await axios.get('/api/v1/teams/get-teams');
+          return response.data;
+        } catch (error) {
+          console.log("error while fetching teams",)
+        }
+      }
+
   });
 
   const registerPlayerMutation = useMutation({
