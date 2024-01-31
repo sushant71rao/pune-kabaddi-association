@@ -15,13 +15,14 @@ const registerTeam = asyncHandler(async (req, res) => {
         startingYear,
         category,
         ageGroup,
-        zone,
+        pinCode,
         authorizedPersonName,
         authorizedPersonPhoneNo,
         managerName,
         managerPhoneNo,
         password,
-        description
+        description,
+        address
     }
         = req.body
 
@@ -60,13 +61,14 @@ const registerTeam = asyncHandler(async (req, res) => {
         startingYear,
         category,
         ageGroup,
-        zone,
+        pinCode,
         authorizedPersonName,
         authorizedPersonPhoneNo,
         managerName,
         managerPhoneNo,
         password,
         description,
+        address
 
     })
 

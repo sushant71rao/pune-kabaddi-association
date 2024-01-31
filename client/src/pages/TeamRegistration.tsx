@@ -59,9 +59,10 @@ const TeamRegistration = () => {
       teamName: "ramlal",
       email: "ramlal@gmail.com",
       phoneNo: "7896587452",
+      address: "near shivmalhar nagar, pune",
       category: "",
       ageGroup: "",
-      zone: "",
+      pinCode: "",
       authorizedPersonName: "tomm",
       authorizedPersonPhoneNo: "7896857456",
       managerName: "killer",
@@ -333,13 +334,32 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Zone */}
+            {/* Address */}
             <FormField
               control={form.control}
-              name="zone"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Zone*</FormLabel>
+                  <FormLabel>address</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="write a bit about your team"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* pinCode */}
+            <FormField
+              control={form.control}
+              name="pinCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>pinCode*</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}
@@ -347,7 +367,7 @@ const TeamRegistration = () => {
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Choose your Zone" />
+                        <SelectValue placeholder="Choose your pinCode" />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
@@ -365,8 +385,6 @@ const TeamRegistration = () => {
                 </FormItem>
               )}
             />
-
-
 
             {/* Authorized Person */}
             <div className="flex gap-4 flex-wrap">

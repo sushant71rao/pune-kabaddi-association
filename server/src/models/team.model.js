@@ -32,7 +32,7 @@ const teamSchema = new mongoose.Schema({
         enum: ['subJunior', 'junior', 'open'],
         required: true,
     },
-    zone: {
+    pinCode: {
         type: String,
         required: true,
     },
