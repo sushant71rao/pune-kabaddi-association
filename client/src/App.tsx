@@ -11,6 +11,7 @@ import Players from "./pages/Players";
 import Officials from "./pages/Officials";
 import Teams from "./pages/Teams";
 import Footer from "./components/Footer";
+import PlayerProfile from "./pages/PlayerProfile";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/team-registration" element={<TeamRegistration />} />
 
           <Route path="admin/players" element={<Players />} />
+          <Route path="admin/player/:id" element={<PlayerProfile />} />
           <Route path="admin/officials" element={<Officials />} />
           <Route path="admin/teams" element={<Teams />} />
         </Routes>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ type Player = {
   dateOfBirth: Date,
 
 }
+
 
 
 export const columns: ColumnDef<Player>[] = [
@@ -112,8 +114,9 @@ export const columns: ColumnDef<Player>[] = [
     id: "actions",
     cell: ({ row }) => {
       const person = row.original;
-      // const personId = person.id;
+      const navigate = useNavigate()
       return (
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-8 h-8 p-0">
@@ -124,7 +127,7 @@ export const columns: ColumnDef<Player>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(person.email.toString());
+                navigate('/admin/player/65b931a327383f419c6cdff3')
               }}
             >
               Edit

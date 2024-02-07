@@ -149,11 +149,23 @@ const registerPlayer = asyncHandler(async (req, res) => {
 })
 
 const getAllPlayers = asyncHandler(async (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
     const players = await Player.find()
     return res.status(201).json(new ApiResponse(200, players, "successfully fetched all players"))
 })
 
+const getPlayer = asyncHandler(async (req, res) => {
+    const playerId = req.params.id
+
+    const player = await Player.findById(playerId)
+
+    // if (!player) {
+    //     throw new ApiError(404, "player not found")
+    // }
+
+
+    return res.status(200).json(new ApiResponse(200, player, "fetched player"))
+
+})
 
 const logoutPlayer = asyncHandler(async (req, res) => {
     await Player.findByIdAndUpdate(
@@ -229,4 +241,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 
-export { registerPlayer, getAllPlayers, loginPlayer, logoutPlayer, refreshAccessToken }
+export { registerPlayer, getAllPlayers, getPlayer, loginPlayer, logoutPlayer, refreshAccessToken }
