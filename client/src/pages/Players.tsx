@@ -1,6 +1,5 @@
 import { columns } from "@/components/admin/Players/columns";
 import PeopleDataTable from "@/components/admin/Players/data-table";
-import { people } from "@/constants/people";
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
