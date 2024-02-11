@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+
 
 const playerSchema = new mongoose.Schema({
     firstName: {
@@ -29,6 +31,7 @@ const playerSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
+        required: true
     },
     birthDate: {
         type: Date,
@@ -51,7 +54,7 @@ const playerSchema = new mongoose.Schema({
     },
     adharNumber: {
         type: String,
-        minlength: [12, 'Invalid Aadhar number.'],
+        minlength: [12, 'Invalid Adhar number.'],
     },
     adharCard: {
         type: String,

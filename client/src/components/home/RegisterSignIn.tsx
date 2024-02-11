@@ -21,12 +21,16 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import signInSchema from "@/schemas/signInSchema";
 import * as z from "zod"
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "../ui/use-toast";
 
 
 const FormSchema = signInSchema
 
 
 const RegisterSingIn = () => {
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -36,10 +40,46 @@ const RegisterSingIn = () => {
     },
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("logged in")
+const login = async (signInData: z.infer<typeof FormSchema>) =>{
+  try{
+    const response = await axios.post('/api/v1/players/login-player', signInData)
+    const data = response?.data
     console.log(data)
   }
+  catch(error){
+    console.log(error)
+    throw new Error("Failed to login")
+  }
+ 
+}
+
+const loginMutation = useMutation(
+  {
+    mutationKey: ['login'],
+    mutationFn: login,
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Registration Failed !!",
+        description: `${error}`,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Player Registered Successfully",
+      });
+      
+    },
+  }
+)
+
+
+  function onSubmit(signInData: z.infer<typeof FormSchema>) {
+    loginMutation.mutate(signInData)
+  }
+
 
   return (
     <MaxWidthWrapper>

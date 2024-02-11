@@ -5,14 +5,18 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
-const generateAccessAndRefreshToken = async (userId) => {
+const generateAccessAndRefreshToken = async (playerId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        const player = await Player.findById(playerId)
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+
+        const accessToken = player.generateAccessToken()
+        const refreshToken = player.generateRefreshToken()
+
+
+
+        player.refreshToken = refreshToken
+        await player.save({ validateBeforeSave: false })
 
         return { accessToken, refreshToken }
 
@@ -22,13 +26,13 @@ const generateAccessAndRefreshToken = async (userId) => {
 }
 
 const loginPlayer = asyncHandler(async (req, res) => {
-    const { username, password } = req.body
+    const { email, password } = req.body
 
-    if (!(username || password)) {
+    if (!(email || password)) {
         throw new ApiError(400, "email or phone number and password is required")
     }
 
-    const player = await Player.findOne({ $or: [{ phoneNo: username }, { email: username }] })
+    const player = await Player.findOne({email })
 
     if (!player) {
         throw new ApiError(404, "Player does not exit")
@@ -155,17 +159,50 @@ const getAllPlayers = asyncHandler(async (req, res) => {
 
 const getPlayer = asyncHandler(async (req, res) => {
     const playerId = req.params.id
-
     const player = await Player.findById(playerId)
 
-    // if (!player) {
-    //     throw new ApiError(404, "player not found")
-    // }
-
+    if (!player) {
+        throw new ApiError(404, "player not found")
+    }
 
     return res.status(200).json(new ApiResponse(200, player, "fetched player"))
 
 })
+
+const getCurrentPlayer = asyncHandler(async (req,res)=>{
+    return res.status(200).json(new ApiResponse(
+        200,
+        req.player,
+        "Player fetched successfully"))
+    })
+
+const updatePlayerDetails = asyncHandler(async(req, res) => {
+    const {firstName, email} = req.body
+
+    if (!firstName || !email) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const player = await Player.findByIdAndUpdate(
+        console.log(req.player),
+        req.player?._id,
+        {
+            $set: {
+                firstName,
+                email: email
+            }
+        },
+        {new: true}
+        
+    ).select("-password")
+
+
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, player, "Account details updated successfully"))
+});
+
 
 const logoutPlayer = asyncHandler(async (req, res) => {
     await Player.findByIdAndUpdate(
@@ -241,4 +278,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 
-export { registerPlayer, getAllPlayers, getPlayer, loginPlayer, logoutPlayer, refreshAccessToken }
+export { registerPlayer, getAllPlayers, getPlayer,updatePlayerDetails, loginPlayer,getCurrentPlayer, logoutPlayer, refreshAccessToken }
