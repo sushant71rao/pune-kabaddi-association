@@ -6,6 +6,8 @@ import { Button } from '../ui/button';
 import NavItems from './NavItems';
 import MobileNav from './MobileNav';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -25,6 +27,20 @@ const Header = () => {
     };
   }, [prevScrollPos, visible]);
 
+  const getCurrentPlayerQuery = useQuery({
+    queryKey: ['currentPlayer'],
+    queryFn: async () =>{
+      try{
+        const response = await axios.get('/api/v1/players/current-player')
+        return response.data
+      }
+      catch(error){
+      console.log("failed to load current player", error)
+      }
+    }
+  }
+  )
+
 
   return (
     <>
@@ -43,7 +59,7 @@ const Header = () => {
 
           <div className="flex w-32 justify-end gap-3">
             <Button asChild className="rounded-full" size="lg">
-              <Link to="/register">Login</Link>
+              <Link to="/register">{getCurrentPlayerQuery?.data ? getCurrentPlayerQuery.data?.data?.firstName : 'Login'} </Link>
             </Button>
             <MobileNav />
           </div>

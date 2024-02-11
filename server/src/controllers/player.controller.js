@@ -172,11 +172,11 @@ const getPlayer = asyncHandler(async (req, res) => {
 const getCurrentPlayer = asyncHandler(async (req,res)=>{
     return res.status(200).json(new ApiResponse(
         200,
-        req.player,
+        req.user,
         "Player fetched successfully"))
     })
 
-const updatePlayerDetails = asyncHandler(async(req, res) => {
+const updatePlayerDetails = asyncHandler(async (req, res) => {
     const {firstName, email} = req.body
 
     if (!firstName || !email) {
@@ -206,7 +206,7 @@ const updatePlayerDetails = asyncHandler(async(req, res) => {
 
 const logoutPlayer = asyncHandler(async (req, res) => {
     await Player.findByIdAndUpdate(
-        req.player._id,
+        req.user._id,
         {
             $set: {
                 refreshToken: undefined
