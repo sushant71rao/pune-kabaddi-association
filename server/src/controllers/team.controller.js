@@ -1,91 +1,93 @@
-import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js"
-import { Team } from "../models/team.model.js"
-import { asyncHandler } from "../utils/asyncHandler.js"
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { Team } from "../models/team.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import LoginUtil from "../utils/LoginUtil.js";
 
 const registerTeam = asyncHandler(async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
 
-    res.setHeader('Content-Type', 'application/json');
+  const {
+    teamName,
+    email,
+    phoneNo,
+    startingYear,
+    category,
+    ageGroup,
+    pinCode,
+    authorizedPersonName,
+    authorizedPersonPhoneNo,
+    managerName,
+    managerPhoneNo,
+    password,
+    description,
+    address,
+  } = req.body;
 
-    const {
-        teamName,
-        email,
-        phoneNo,
-        startingYear,
-        category,
-        ageGroup,
-        pinCode,
-        authorizedPersonName,
-        authorizedPersonPhoneNo,
-        managerName,
-        managerPhoneNo,
-        password,
-        description,
-        address
-    }
-        = req.body
+  if (
+    [teamName, email, phoneNo, password].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
 
+  const existedUser = await Team.findOne({
+    $or: [{ teamName }, { email }],
+  });
 
-    if (
-        [teamName, email, phoneNo, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
-    }
+  if (existedUser) {
+    throw new ApiError(409, "team name or email all ready exists");
+  }
 
-    const existedUser = await Team.findOne({
-        $or: [{ teamName }, { email }]
-    })
+  const logoLocalPath = req.files?.logo[0]?.path;
 
-    if (existedUser) {
-        throw new ApiError(409, "team name or email all ready exists")
-    }
+  if (!logoLocalPath) {
+    throw new ApiError("400", "Logo image is required");
+  }
 
-    const logoLocalPath = req.files?.logo[0]?.path;
+  const logo = await uploadOnCloudinary(logoLocalPath);
 
-    if (!logoLocalPath) {
-        throw new ApiError("400", "Logo image is required")
-    }
+  if (!logo) {
+    throw new ApiError(400, "Logo not uploaded on cloudinary");
+  }
 
-    const logo = await uploadOnCloudinary(logoLocalPath)
+  const team = await Team.create({
+    logo: logo.url,
+    teamName,
+    email,
+    phoneNo,
+    startingYear,
+    category,
+    ageGroup,
+    pinCode,
+    authorizedPersonName,
+    authorizedPersonPhoneNo,
+    managerName,
+    managerPhoneNo,
+    password,
+    description,
+    address,
+  });
 
-    if (!logo) {
-        throw new ApiError(400, "Logo not uploaded on cloudinary")
-    }
+  const createdTeam = await Team.findById(team._id).select("-password ");
 
-    const team = await Team.create({
+  if (!createdTeam) {
+    throw new ApiError("500", "something went wrong while creating the team");
+  }
 
-        logo: logo.url,
-        teamName,
-        email,
-        phoneNo,
-        startingYear,
-        category,
-        ageGroup,
-        pinCode,
-        authorizedPersonName,
-        authorizedPersonPhoneNo,
-        managerName,
-        managerPhoneNo,
-        password,
-        description,
-        address
-
-    })
-
-    const createdTeam = await Team.findById(team._id).select("-password ")
-
-    if (!createdTeam) {
-        throw new ApiError('500', 'something went wrong while creating the team')
-    }
-
-    return res.status(201).json(
-        new ApiResponse(200, createdTeam, "team created successfully")
-    )
-})
+  return res
+    .status(201)
+    .json(new ApiResponse(200, createdTeam, "team created successfully"));
+});
 
 const getAllTeams = asyncHandler(async (req, res) => {
-    const teams = await Team.find()
-    return res.status(201).json(new ApiResponse(200, teams, "successfully received all teams"))
-})
+  const teams = await Team.find();
+  console.log("hit at search teams");
+  return res
+    .status(201)
+    .json(new ApiResponse(200, teams, "successfully received all teams"));
+});
 
-export { registerTeam, getAllTeams }
+const LoginTeam = LoginUtil(Team);
+
+export { registerTeam, getAllTeams, LoginTeam };
