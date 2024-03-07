@@ -1,11 +1,26 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Outlet } from "react-router-dom";
+
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "../ui/button";
 import NavItems from "./NavItems";
 import MobileNav from "./MobileNav";
-import { Link } from "react-router-dom";
+
 import { AuthContext } from "../../../context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOutIcon, User } from "lucide-react";
+import Axios from "@/Axios/Axios";
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -25,8 +40,14 @@ const Header = () => {
     };
   }, [prevScrollPos, visible]);
 
-  let { user } = useContext(AuthContext);
+  let { user, logoutUser } = useContext(AuthContext);
   // console.log(user);
+  // const queryClient = useQueryClient();
+
+  const handleLogout = async () => {
+    logoutUser!();
+  };
+
   return (
     <>
       <header
@@ -42,9 +63,37 @@ const Header = () => {
             <NavItems />
           </nav>
           <div className="flex w-32 justify-end gap-3">
-            <Button asChild className="rounded-full" size="lg">
-              <Link to="/register">{user ? user?.firstName : "Login"} </Link>
-            </Button>
+            {!user ? (
+              <Button asChild className="rounded-full" size="lg">
+                <Link to="/register">Login</Link>
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div>
+                    <Avatar>
+                      <AvatarImage src={String(user?.avatar)} alt="profile" />
+                      <AvatarFallback>{user?.firstName}</AvatarFallback>
+                    </Avatar>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem>
+                    Profile{" "}
+                    <DropdownMenuShortcut>
+                      <User />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Log out{" "}
+                    <DropdownMenuShortcut>
+                      <LogOutIcon />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             <MobileNav />
           </div>
         </div>

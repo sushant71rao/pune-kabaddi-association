@@ -1,6 +1,6 @@
 import React, { createContext, useState } from "react";
 import { User, Team } from "../src/schemas/types";
-
+import Axios from "@/Axios/Axios";
 
 // type data = {
 //   role?: string;
@@ -14,6 +14,7 @@ type iContext = {
   team?: Team;
   getuser?: (user: User, role: string) => void;
   getteam?: (team: Team, role: string) => void;
+  logoutUser?: () => void;
 };
 
 type Props = {
@@ -57,8 +58,19 @@ const AuthContextProvider = ({ children }: Props) => {
     localStorage.setItem("role", JSON.stringify(role));
     setUser({ role: role, team: team });
   };
+  let logoutUser = async () => {
+    try {
+      let res = await await Axios.post("/api/v1/players/logout-player");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      setUser({});
+      console.log(res);
+    } catch (error) {
+      console.warn(error);
+    }
+  };
   return (
-    <AuthContext.Provider value={{ ...user, getteam, getuser }}>
+    <AuthContext.Provider value={{ ...user, getteam, getuser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );

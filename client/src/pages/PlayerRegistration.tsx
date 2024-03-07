@@ -392,7 +392,7 @@ const PlayerRegistration = () => {
                       ) : fetchTeamsQuery.error ? (
                         <p>error while loading data </p>
                       ) : (
-                        fetchTeamsQuery.data.data.map(
+                        fetchTeamsQuery?.data?.data?.map(
                           (item: z.infer<typeof teamRegistrationSchema>) => {
                             return (
                               <SelectItem
