@@ -11,19 +11,15 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 type Player = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  teamName: string,
-  gender: string,
-  phoneNo: string,
-  dateOfBirth: Date,
-
-}
-
-
+  firstName: string;
+  lastName: string;
+  email: string;
+  teamName: string;
+  gender: string;
+  phoneNo: string;
+  dateOfBirth: Date;
+};
 
 export const columns: ColumnDef<Player>[] = [
   {
@@ -112,11 +108,13 @@ export const columns: ColumnDef<Player>[] = [
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
+      const id = row.getValue("_id");
       const person = row.original;
-      const navigate = useNavigate()
-      return (
 
+      const navigate = useNavigate();
+      return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-8 h-8 p-0">
@@ -127,7 +125,7 @@ export const columns: ColumnDef<Player>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigate('/admin/player/65b931a327383f419c6cdff3')
+                navigate(`/admin/player/${id}`);
               }}
             >
               Edit

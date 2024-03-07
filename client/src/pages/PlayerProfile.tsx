@@ -45,17 +45,23 @@ import { useEffect, useState } from "react";
 const formSchema = playerProfileSchema;
 
 import { useToast } from "@/components/ui/use-toast";
-import { playerProfileSchema } from "@/schemas/playerProfileSchema";
+import { playerProfileSchema, PlayerType } from "@/schemas/playerProfileSchema";
 import DocumentView from "@/components/DocumentView";
 import DocumentDownload from "./DocumentDownload";
+import Axios from "@/Axios/Axios";
+import { useParams } from "react-router-dom";
 
 const PlayerProfile = () => {
+  const [profilePhoto, setProfilePhoto] = useState<File>();
+  const [birthCertificate, setBirthCertificate] = useState<File>();
+  const [aadharCard, setAadharCard] = useState<File>();
 
+  const { id } = useParams();
   const fetchTeamsQuery = useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
       try {
-        const response = await axios.get("/api/v1/teams/get-teams");
+        const response = await Axios.get("/api/v1/teams/get-teams");
         return response.data;
       } catch (error) {
         console.log("error while fetching teams");
@@ -63,44 +69,38 @@ const PlayerProfile = () => {
     },
   });
 
-  const fetchPlayerQuery = useQuery({
+  const fetchPlayerQuery = useQuery<PlayerType | undefined>({
     queryKey: ["player"],
     queryFn: async () => {
       try {
-        const response = await axios.get(
-          "/api/v1/players/get-player/65b931a327383f419c6cdff3"
-        );
-        return response.data;
+        const response = await Axios.get(`/api/v1/players/get-player/${id}`);
+        console.log(response.data.data);
+        return response.data.data as PlayerType;
       } catch (error) {
-        console.log("error while fetching teams");
+        console.log("error while fetching teams", error);
       }
     },
   });
 
-
-  const playerData = fetchPlayerQuery.isSuccess
-    ? fetchPlayerQuery.data.data
-    : [{}];
+  let { data } = fetchPlayerQuery;
 
   const [date, setDate] = useState<Date | undefined>(
-    playerData.birthDate ? new Date(playerData.birthDate) : undefined
+    data?.birthDate || undefined
   );
-
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phoneNo: "",
-      birthDate: date,
-      avatar: "",
-      adharNumber: "",
-      adharCard: "",
-      birthCertificate: "",
+      firstName: data?.firstName || "",
+      middleName: data?.middleName || "",
+      lastName: data?.lastName || "",
+      email: data?.email || "",
+      phoneNo: data?.phoneNo || "",
+      birthDate: data?.birthDate || date,
+      adharNumber: data?.adharNumber || "",
+      // avatar: data?.avatar || "",
+      // adharCard: data?.adharCard || "",
+      // birthCertificate: data?.birthCertificate || "",
       password: "",
       achievements: [
         { achievementYear: "", achievementTitle: "", achievementDocument: "" },
@@ -110,60 +110,54 @@ const PlayerProfile = () => {
 
   useEffect(() => {
     if (fetchPlayerQuery.isSuccess) {
-      setDate(new Date(playerData.birthDate));
-      
-      form.reset(playerData);
+      setDate(new Date(data?.birthDate || ""));
+
+      form.reset(data);
     }
-  }, [fetchPlayerQuery.isSuccess, playerData, form]);
+  }, [fetchPlayerQuery.isSuccess, data, form]);
 
   form.watch();
 
   const registerPlayer = async (playerData: z.infer<typeof formSchema>) => {
-
     {
       const formData = new FormData();
-
       for (const key in playerData) {
-        if (key === "adharCard") {
-          const adharCardFile = (playerData[key] as FileList)[0];
-          formData.append(key, adharCardFile);
-        } else if (key == "avatar") {
-          const avatarFile = (playerData[key] as FileList)[0];
-          formData.append(key, avatarFile);
-        } else if (key == "birthCertificate") {
-          const birthCertificateFile = (playerData[key] as FileList)[0];
-          formData.append(key, birthCertificateFile);
-        }
+        // if (key === "adharCard") {
+        //   const adharCardFile = (playerData[key] as FileList)[0];
+        //   formData.append(key, adharCardFile);
+        // } else if (key == "avatar") {
+        //   const avatarFile = (playerData[key] as FileList)[0];
+        //   formData.append(key, avatarFile);
+        // } else if (key == "birthCertificate") {
+        //   const birthCertificateFile = (playerData[key] as FileList)[0];
+        //   formData.append(key, birthCertificateFile);
+        // }
         // else if(key =='achievementDocument'){
         //   const achievementDocumentFile = (playerData[key] as FileList)[0];
         //   formData.append(key, achievementDocumentFile)
         // }
-        else {
-          // Use keyof to ensure that key is a valid property of playerData
-          const validKey = key as keyof typeof playerData;
-          const value = playerData[validKey];
-
-          if (validKey === "birthDate" && value instanceof Date) {
-            formData.append(validKey, value.toISOString());
-          } else if (typeof value === "string" || typeof value === "number") {
-            formData.append(validKey, value.toString());
-          } else {
-            console.warn(`Unsupported type for field '${validKey}'`);
-          }
-        }
+        // else {
+        //   // Use keyof to ensure that key is a valid property of playerData
+        //   const validKey = key as keyof typeof playerData;
+        //   const value = playerData[validKey];
+        //   if (validKey === "birthDate" && value instanceof Date) {
+        //     formData.append(validKey, value.toISOString());
+        //   } else if (typeof value === "string" || typeof value === "number") {
+        //     formData.append(validKey, value.toString());
+        //   } else {
+        //     console.warn(`Unsupported type for field '${validKey}'`);
+        //   }
+        // }
       }
 
+      let fomdata = form.getValues();
       try {
-        const response = await axios.post(
-          "/api/v1/players/register-player",
-          formData,
+        const response = await Axios.patch(
+          `/api/v1/players/update-player-details/${id}`,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            ...fomdata,
           }
         );
-
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -176,6 +170,29 @@ const PlayerProfile = () => {
   };
 
   const { toast } = useToast();
+
+  const FileUpdate = useMutation({
+    mutationKey: ["fileupdate"],
+    mutationFn: async (files: any) => {
+      // console.log(Object.keys(files));
+
+      try {
+        let response = await Axios.patch(
+          `/api/v1/players/update-files/`,
+          files,
+          {
+            // withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const registerPlayerMutation = useMutation({
     mutationKey: ["registerPlayer"],
@@ -191,21 +208,19 @@ const PlayerProfile = () => {
       toast({
         variant: "default",
         title: "Success",
-        description: "Player Registered Successfully",
+        description: "Player Updated Successfully",
       });
     },
   });
 
-  const avatarFileRef = form.register("avatar", { required: true });
-  const adharCardFileRef = form.register("adharCard", { required: true });
-  const birthCertificateFileRef = form.register("birthCertificate");
-
+  // const avatarFileRef = form.register("avatar", { required: true });
+  // const adharCardFileRef = form.register("adharCard", { required: true });
+  // const birthCertificateFileRef = form.register("birthCertificate");
 
   const onSubmit = (playerData: z.infer<typeof formSchema>) => {
     console.log(playerData);
     registerPlayerMutation.mutate(playerData);
   };
-
 
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
@@ -297,33 +312,18 @@ const PlayerProfile = () => {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Date of birth*</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] justify-start text-left font-normal",
-                          !date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent align="start" className=" w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        captionLayout="dropdown-buttons"
-                        selected={date}
-                        onSelect={(date) => {
-                          setDate(date);
-                          field.onChange(date);
-                        }}
-                        fromYear={1960}
-                        toYear={2030}
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <Input
+                    type="date"
+                    className="w-min"
+                    onChange={(elem) => {
+                      // console.log(elem?.target.value);
+                      field?.onChange(new Date(elem?.target.value));
+                    }}
+                    value={
+                      field?.value &&
+                      new Date(field?.value)?.toISOString()?.substring(0, 10)
+                    }
+                  ></Input>
                   <FormDescription>
                     Please check the date once again.
                   </FormDescription>
@@ -340,10 +340,7 @@ const PlayerProfile = () => {
                 <FormItem>
                   <FormLabel>Select your Gender*</FormLabel>
 
-                  <Select
-                    onValueChange={field.onChange}
-                    value={playerData.gender}
-                  >
+                  <Select onValueChange={field.onChange} value={data?.gender}>
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
                         <SelectValue placeholder="Select Gender" />
@@ -368,10 +365,10 @@ const PlayerProfile = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select Your Team*</FormLabel>
-
                   <Select
+                    defaultValue={field.value}
                     onValueChange={field.onChange}
-                    value={playerData.team}
+                    value={data?.teamName}
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
@@ -411,10 +408,10 @@ const PlayerProfile = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Playing Skill*</FormLabel>
-
                   <Select
+                    defaultValue={field?.value}
                     onValueChange={field.onChange}
-                    value={playerData.playingSkill}
+                    value={data?.playingSkill}
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
@@ -449,7 +446,7 @@ const PlayerProfile = () => {
             />
 
             {/* Avatar */}
-            <div className="flex w-full items-end gap-4 flex-wrap">
+            {/* <div className="flex w-full items-end gap-4 flex-wrap">
               <FormField
                 control={form.control}
                 name="avatar"
@@ -463,12 +460,12 @@ const PlayerProfile = () => {
                   </FormItem>
                 )}
               />
-                      <DocumentView imgUrl={playerData.avatar} />
-              <DocumentDownload imgUrl={playerData.avatar} />
-            </div>
+              <DocumentView imgUrl={data?.avatar} />
+              <DocumentDownload imgUrl={data?.avatar} />
+            </div> */}
 
             {/* Adhar Card */}
-            <div className="flex gap-4 flex-wrap items-end">
+            {/* <div className="flex gap-4 flex-wrap items-end">
               <FormField
                 control={form.control}
                 name="adharCard"
@@ -482,12 +479,12 @@ const PlayerProfile = () => {
                   </FormItem>
                 )}
               />
-              <DocumentView imgUrl={playerData.adharCard} />
-              <DocumentDownload imgUrl={playerData.adharCard} />
-            </div>
+              <DocumentView imgUrl={data?.adharCard} />
+              <DocumentDownload imgUrl={data?.adharCard} />
+            </div> */}
 
             {/* Birth Certificate */}
-            <div className="flex gap-4 flex-wrap items-end">
+            {/* <div className="flex gap-4 flex-wrap items-end">
               <FormField
                 control={form.control}
                 name="birthCertificate"
@@ -508,9 +505,9 @@ const PlayerProfile = () => {
                 )}
               />
 
-<DocumentView imgUrl={playerData.birthCertificate} />
-              <DocumentDownload imgUrl={playerData.birthCertificate} />
-            </div>
+              <DocumentView imgUrl={data?.birthCertificate} />
+              <DocumentDownload imgUrl={data?.birthCertificate} />
+            </div> */}
 
             <Button
               type="submit"
@@ -536,6 +533,129 @@ const PlayerProfile = () => {
             </p>
           </form>
         </Form>
+        <div className="flex flex-col gap-3 ">
+          <div className="flex justify-between items-end">
+            <div className="flex gap-2 items-end">
+              <div>
+                <div className="text-sm font-medium">Profile Photo</div>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    setProfilePhoto(e?.target?.files?.[0] || ({} as File));
+                  }}
+                ></Input>
+              </div>
+              <div className="flex gap-1">
+                <DocumentView
+                  imgUrl={
+                    profilePhoto
+                      ? URL.createObjectURL(profilePhoto)
+                      : data?.avatar
+                  }
+                />
+                <DocumentDownload
+                  imgUrl={
+                    profilePhoto
+                      ? URL.createObjectURL(profilePhoto)
+                      : data?.avatar
+                  }
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                // console.log(profilePhoto);
+                const formData = new FormData();
+                formData.append("avatar", profilePhoto!, profilePhoto?.name);
+                FileUpdate.mutate(formData);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+          <div className="flex justify-between items-end">
+            <div className="flex gap-2 items-end">
+              <div>
+                <div className="text-sm font-medium">Birth Certificate</div>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    setBirthCertificate(e?.target?.files?.[0] || ({} as File));
+                  }}
+                ></Input>
+              </div>
+              <div className="flex gap-1">
+                <DocumentView
+                  imgUrl={
+                    birthCertificate
+                      ? URL.createObjectURL(birthCertificate)
+                      : data?.birthCertificate
+                  }
+                />
+                <DocumentDownload
+                  imgUrl={
+                    birthCertificate
+                      ? URL.createObjectURL(birthCertificate)
+                      : data?.birthCertificate
+                  }
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                // console.log(birthCertificate);
+                const formData = new FormData();
+                formData.append(
+                  "birthCertificate",
+                  birthCertificate!,
+                  birthCertificate?.name
+                );
+                FileUpdate.mutate(formData);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+          <div className="flex justify-between items-end">
+            <div className="flex gap-2 items-end">
+              <div>
+                <div className="text-sm font-medium">Aadhar Card</div>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    setAadharCard(e.target.files?.[0] || ({} as File));
+                  }}
+                ></Input>
+              </div>
+              <div className="flex gap-1">
+                <DocumentView
+                  imgUrl={
+                    aadharCard
+                      ? URL.createObjectURL(aadharCard)
+                      : data?.adharCard
+                  }
+                />
+                <DocumentDownload
+                  imgUrl={
+                    aadharCard
+                      ? URL.createObjectURL(aadharCard)
+                      : data?.adharCard
+                  }
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                // console.log(aadharCard);
+                const formData = new FormData();
+                formData.append("aadharCard", aadharCard!, aadharCard?.name);
+                FileUpdate.mutate(formData);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

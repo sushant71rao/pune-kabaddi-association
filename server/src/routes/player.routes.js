@@ -6,13 +6,17 @@ import {
   LoginPlayer,
   logoutPlayer,
   registerPlayer,
+  updateFiles,
   updatePlayerDetails,
 } from "../controllers/player.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Player } from "../models/player.model.js";
-
+// import multer from "multer";
+// import path from "path";
 const router = Router();
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
 
 router.route("/register-player").post(
   upload.fields([
@@ -23,10 +27,20 @@ router.route("/register-player").post(
   ]),
   registerPlayer
 );
+router.route("/update-files").patch(
+  // upload.single("avatar"),
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "adharCard", maxCount: 1 },
+    { name: "birthCertificate", maxCount: 1 },
+    // { name: "achievementDocument", maxCount: 1 },
+  ]),
+  updateFiles
+);
 router.route("/login").post(LoginPlayer);
 router.route("/get-players").get(getAllPlayers);
 router.route("/get-player/:id").get(getPlayer);
-router.route("/update-player-details").patch(updatePlayerDetails);
+router.route("/update-player-details/:id").patch(updatePlayerDetails);
 
 //secured routes
 router.route("/logout-player").post(verifyJWT(Player), logoutPlayer);

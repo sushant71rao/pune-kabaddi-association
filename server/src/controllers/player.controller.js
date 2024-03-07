@@ -3,11 +3,72 @@ import { ApiError } from "../utils/ApiError.js";
 import { Player } from "../models/player.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
 import LoginUtil from "../utils/LoginUtil.js";
 
+const generateAccessAndRefreshToken = async (playerId) => {
+  try {
+    const player = await Player.findById(playerId);
 
+    const accessToken = player.generateAccessToken();
+    const refreshToken = player.generateRefreshToken();
 
-const LoginPlayer = LoginUtil(Player);
+    player.refreshToken = refreshToken;
+    await player.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "something went wrong while generation refresh and access token"
+    );
+  }
+};
+
+const loginPlayer = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!(email || password)) {
+    throw new ApiError(400, "email or phone number and password is required");
+  }
+
+  const player = await Player.findOne({ email });
+
+  if (!player) {
+    throw new ApiError(404, "Player does not exit");
+  }
+
+  const isPasswordValid = await player.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid player credentials");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    player._id
+  );
+
+  const loggedInPlayer = await Player.findById(player._id).select(
+    "-password -refresh"
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { player: loggedInPlayer, accessToken, refreshToken },
+        "player logged in successfully"
+      )
+    );
+});
 
 const registerPlayer = asyncHandler(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -180,6 +241,14 @@ const logoutPlayer = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Player logged out successfully"));
 });
 
+const updateFiles = asyncHandler(async (req, res, next) => {
+  console.log(req?.files);
+  res.status(200).json({
+    success: true,
+    message: "Hereee",
+  });
+});
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -228,12 +297,16 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const LoginPlayer = LoginUtil(Player);
+
 export {
   registerPlayer,
   getAllPlayers,
+  LoginPlayer,
   getPlayer,
   updatePlayerDetails,
-  LoginPlayer,
+  updateFiles,
+  loginPlayer,
   getCurrentPlayer,
   logoutPlayer,
   refreshAccessToken,
