@@ -57,6 +57,7 @@ const RegisterSingIn = () => {
       const response = await Axios.post(`/api/v1/${link}/login`, signInData, {
         withCredentials: true,
       });
+
       const resdata = response?.data;
 
       if (link == "teams") {
