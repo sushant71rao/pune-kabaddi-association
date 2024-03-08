@@ -144,8 +144,7 @@ const PlayerRegistration = () => {
         const response = await Axios.get("/api/v1/teams/get-teams");
         return response.data;
       } catch (error) {
-        console.log("error while fetching teams");
-        throw error;
+        console.log("error while fetching teams", error);
       }
     },
   });
@@ -329,7 +328,7 @@ const PlayerRegistration = () => {
                           field.onChange(date);
                         }}
                         fromYear={1960}
-                        toYear={2030}
+                        toYear={2020}
                       />
                     </PopoverContent>
                   </Popover>

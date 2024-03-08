@@ -9,7 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Popover,
@@ -30,28 +30,23 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
-
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import * as z from "zod"
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast";
 
-
-const formSchema = teamRegistrationSchema
-
-
+const formSchema = teamRegistrationSchema;
 
 const TeamRegistration = () => {
-
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,8 +65,7 @@ const TeamRegistration = () => {
       password: "rajesh@",
       description: "noice",
       logo: undefined,
-    }
-
+    },
   });
 
   form.watch();
@@ -81,7 +75,7 @@ const TeamRegistration = () => {
       const formData = new FormData();
 
       for (const key in teamData) {
-        if (key === 'logo') {
+        if (key === "logo") {
           const logoFile = (teamData[key] as FileList)[0];
           formData.append(key, logoFile);
         } else {
@@ -89,9 +83,9 @@ const TeamRegistration = () => {
           const validKey = key as keyof typeof teamData;
           const value = teamData[validKey];
 
-          if (validKey === 'startingYear' && value instanceof Date) {
+          if (validKey === "startingYear" && value instanceof Date) {
             formData.append(validKey, value.toISOString());
-          } else if (typeof value === 'string' || typeof value === 'number') {
+          } else if (typeof value === "string" || typeof value === "number") {
             formData.append(validKey, value.toString());
           } else {
             console.warn(`Unsupported type for field '${validKey}'`);
@@ -100,54 +94,51 @@ const TeamRegistration = () => {
       }
 
       try {
-        const response = await axios.post('/api/v1/teams/register-team', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+        const response = await axios.post(
+          "/api/v1/teams/register-team",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
-        });
+        );
 
-        return response.data
-
+        return response.data;
       } catch (error) {
-
         if (axios.isAxiosError(error) && error.response?.status === 409) {
-          throw new Error('Team Name or Email already exists');
+          throw new Error("Team Name or Email already exists");
         } else {
-          throw new Error('Team registration failed. Please try again.');
+          throw new Error("Team registration failed. Please try again.");
         }
       }
     }
-  }
+  };
 
   const registerTeamMutation = useMutation({
-    mutationKey: ['registerTeam'],
+    mutationKey: ["registerTeam"],
     mutationFn: registerTeam,
     onError: (error) => {
       toast({
-        variant: 'destructive',
-        title: 'Registration Failed !!',
+        variant: "destructive",
+        title: "Registration Failed !!",
         description: `${error}`,
       });
     },
     onSuccess: () => {
       toast({
-        variant: 'default',
-        title: 'Success',
-        description: 'Team Registered Successfully',
+        variant: "default",
+        title: "Success",
+        description: "Team Registered Successfully",
       });
-    }
-
+    },
   });
 
-
-  const fileRef = form.register('logo', { required: true });
+  const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
-
-
-    console.log(teamData)
+    console.log(teamData);
     registerTeamMutation.mutate(teamData);
-
   };
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
@@ -157,9 +148,12 @@ const TeamRegistration = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form} >
-          <form onSubmit={form.handleSubmit(onSubmit)} encType="multipart/form-data" className="space-y-8" >
-
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            encType="multipart/form-data"
+            className="space-y-8"
+          >
             {/* Team Name */}
             <FormField
               control={form.control}
@@ -174,7 +168,6 @@ const TeamRegistration = () => {
                 </FormItem>
               )}
             />
-
 
             {/* Email */}
             <FormField
@@ -214,7 +207,7 @@ const TeamRegistration = () => {
                 <FormItem>
                   <FormLabel>Team Logo</FormLabel>
                   <FormControl>
-                    <Input type="file"   {...fileRef} />
+                    <Input type="file" {...fileRef} />
                   </FormControl>
 
                   <FormMessage />
@@ -285,12 +278,8 @@ const TeamRegistration = () => {
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="m">
-                          Male
-                        </SelectItem>
-                        <SelectItem value="f">
-                          Female
-                        </SelectItem>
+                        <SelectItem value="m">Male</SelectItem>
+                        <SelectItem value="f">Female</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -318,15 +307,9 @@ const TeamRegistration = () => {
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="subJunior">
-                          Sub Junior
-                        </SelectItem>
-                        <SelectItem value="junior">
-                          Junior
-                        </SelectItem>
-                        <SelectItem value="open">
-                          Open
-                        </SelectItem>
+                        <SelectItem value="subJunior">Sub Junior</SelectItem>
+                        <SelectItem value="junior">Junior</SelectItem>
+                        <SelectItem value="open">Open</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -373,12 +356,8 @@ const TeamRegistration = () => {
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="789654">
-                          411 355
-                        </SelectItem>
-                        <SelectItem value="758965">
-                          789 456
-                        </SelectItem>
+                        <SelectItem value="789654">411 355</SelectItem>
+                        <SelectItem value="758965">789 456</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -440,7 +419,10 @@ const TeamRegistration = () => {
                   <FormItem>
                     <FormLabel>Managers PhonNo*</FormLabel>
                     <FormControl>
-                      <Input placeholder="write managers phone no." {...field} />
+                      <Input
+                        placeholder="write managers phone no."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -481,12 +463,29 @@ const TeamRegistration = () => {
               )}
             />
 
-            <Button type="submit" className="w-full mt-4" disabled={registerTeamMutation.isPending}>
-              {registerTeamMutation.isPending ? (<>Submitting <img src="/assets/loading.svg" alt="loading" className="w-6 h-6 ml-4" /> </>) : 'Submit'}
-
+            <Button
+              type="submit"
+              className="w-full mt-4"
+              disabled={registerTeamMutation.isPending}
+            >
+              {registerTeamMutation.isPending ? (
+                <>
+                  Submitting{" "}
+                  <img
+                    src="/assets/loading.svg"
+                    alt="loading"
+                    className="w-6 h-6 ml-4"
+                  />{" "}
+                </>
+              ) : (
+                "Submit"
+              )}
             </Button>
 
-            <p className="text-red-600 font-semibold">{registerTeamMutation.error && registerTeamMutation.error?.message} </p>
+            <p className="text-red-600 font-semibold">
+              {registerTeamMutation.error &&
+                registerTeamMutation.error?.message}{" "}
+            </p>
           </form>
         </Form>
       </CardContent>

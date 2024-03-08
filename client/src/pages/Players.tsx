@@ -3,7 +3,6 @@ import { columns } from "@/components/admin/Players/columns";
 import PeopleDataTable from "@/components/admin/Players/data-table";
 
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 const Players = () => {
   const fetchPlayerQuery = useQuery({

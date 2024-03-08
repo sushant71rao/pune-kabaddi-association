@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "../ui/button";
 import NavItems from "./NavItems";
@@ -20,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOutIcon, User } from "lucide-react";
-import Axios from "@/Axios/Axios";
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
