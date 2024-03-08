@@ -8,14 +8,12 @@ export const headerLinks = [
     route: "/news",
   },
   {
-    label: "Teams",
-    route: "/teams",
-  },
-  {
     label: "Contact Us",
     route: "/contact-us",
   },
+];
 
+export const AdminLinks = [
   {
     label: "Players",
     route: "/admin/players",

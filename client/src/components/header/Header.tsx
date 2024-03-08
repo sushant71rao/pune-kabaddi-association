@@ -1,11 +1,15 @@
+import { useContext } from "react";
+import { Outlet } from "react-router-dom";
+
 import { useEffect, useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 import { Button } from "../ui/button";
 import NavItems from "./NavItems";
 import MobileNav from "./MobileNav";
+
+import { AuthContext } from "../../../context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOutIcon, User } from "lucide-react";
+import Axios from "@/Axios/Axios";
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -35,27 +40,12 @@ const Header = () => {
     };
   }, [prevScrollPos, visible]);
 
-  const { data: currentPlayer, isError } = useQuery({
-    queryKey: ["currentPlayer"],
-    queryFn: async () => {
-      const response = await axios.get("/api/v1/players/current-player");
-      return response.data;
-    },
-  });
-
-  const queryClient = useQueryClient();
-  // const { mutate: logout } = useLogout();
-
-  const logoutMutation = useMutation({
-    mutationKey: ["logout"],
-    mutationFn: async () => {
-      const response = await axios.post("/api/v1/players/logout-player");
-      return response.data;
-    },
-  });
+  let { user, logoutUser } = useContext(AuthContext);
+  // console.log(user);
+  // const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    logoutMutation.mutate();
+    logoutUser!();
   };
 
   return (
@@ -69,13 +59,11 @@ const Header = () => {
           <div className="w-36">
             <img src="/assets/logo.png" width={80} height={38} alt="logo" />
           </div>
-
           <nav className="md:flex md:flex-between hidden w-full max-w-xl">
             <NavItems />
           </nav>
-
           <div className="flex w-32 justify-end gap-3">
-            {isError ? (
+            {!user ? (
               <Button asChild className="rounded-full" size="lg">
                 <Link to="/register">Login</Link>
               </Button>
@@ -84,10 +72,8 @@ const Header = () => {
                 <DropdownMenuTrigger asChild>
                   <div>
                     <Avatar>
-                      <AvatarImage src={currentPlayer?.avatar} alt="profile" />
-                      <AvatarFallback>
-                        {currentPlayer?.firstName}
-                      </AvatarFallback>
+                      <AvatarImage src={String(user?.avatar)} alt="profile" />
+                      <AvatarFallback>{user?.firstName}</AvatarFallback>
                     </Avatar>
                   </div>
                 </DropdownMenuTrigger>

@@ -22,15 +22,21 @@ export const playerProfileSchema = z.object({
   phoneNo: z.string().min(10, { message: "Invalid phone number." }),
   avatar: z
     .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, .png and .webp files are accepted."
-    ),
-  birthDate: z.date(),
+    .nullable()
+    .refine((files) => {
+      //Condition to return true if no file exists or even for the string of image is found
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      return files?.[0]?.size < MAX_FILE_SIZE;
+    }, `Max file size is 5MB.`)
+    .refine((files) => {
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
+    }, ".jpg, .jpeg, .png and .webp files are accepted."),
+  birthDate: z.coerce.date(),
   gender: z.string().refine((value) => ["m", "f"].includes(value), {
     message: "Invalid gender.",
   }),
@@ -41,27 +47,42 @@ export const playerProfileSchema = z.object({
   adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
   adharCard: z
     .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, .png and .webp files are accepted."
-    ),
+    .nullable()
+    .refine((files) => {
+      //Condition to return true if no file exists or even for the string of image is found
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      return files?.[0]?.size < MAX_FILE_SIZE;
+    }, `Max file size is 5MB.`)
+    .refine((files) => {
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      console.log(files[0]?.type, "here");
+      ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
+    }, ".jpg, .jpeg, .png and .webp files are accepted."),
   birthCertificate: z
     .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      ".jpg, .jpeg, .png and .webp files are accepted."
-    ),
+    .nullable()
+    .refine((files) => {
+      //Condition to return true if no file exists or even for the string of image is found
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      return files?.[0]?.size < MAX_FILE_SIZE;
+    }, `Max file size is 5MB.`)
+    .refine((files) => {
+      if (!files?.length || typeof files == typeof "") {
+        return true;
+      }
+      ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
+    }, ".jpg, .jpeg, .png and .webp files are accepted."),
   password: z
     .string()
     .min(8, { message: "Password must be at least 5 characters." }),
 
   achievements: z.array(achievementSchema),
 });
+
+export type PlayerType = z.infer<typeof playerProfileSchema>;

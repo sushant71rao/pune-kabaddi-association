@@ -12,29 +12,40 @@ import Officials from "./pages/Officials";
 import Teams from "./pages/Teams";
 import Footer from "./components/Footer";
 import PlayerProfile from "./pages/PlayerProfile";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext.tsx";
 
 function App() {
+  let { role } = useContext(AuthContext);
   return (
     <Routes>
-      <Route path="*" element={<>
-        <Header />
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route index element={<Home />} />
-          <Route path="/player-registration" element={<PlayerRegistration />} />
-          <Route path="/official-registration" element={<OfficialRegistration />} />
-          <Route path="/team-registration" element={<TeamRegistration />} />
-
-          <Route path="admin/players" element={<Players />} />
-          <Route path="admin/player/:id" element={<PlayerProfile />} />
-          <Route path="admin/officials" element={<Officials />} />
-          <Route path="admin/teams" element={<Teams />} />
-        </Routes>
-        <Footer />
-
-      </>}>
-      </Route>
-
+      <Route
+        path="*"
+        element={
+          <>
+            <Header />
+            <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route index element={<Home />} />
+              <Route
+                path="/player-registration"
+                element={<PlayerRegistration />}
+              />
+              <Route
+                path="/official-registration"
+                element={<OfficialRegistration />}
+              />
+              <Route path="/team-registration" element={<TeamRegistration />} />
+              {role == "admin" && <></>}
+              <Route path="admin/player/:id" element={<PlayerProfile />} />
+              <Route path="admin/officials" element={<Officials />} />
+              <Route path="admin/teams" element={<Teams />} />
+              <Route path="admin/players" element={<Players />} />
+            </Routes>
+            <Footer />
+          </>
+        }
+      ></Route>
     </Routes>
   );
 }
