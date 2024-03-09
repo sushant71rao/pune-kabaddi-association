@@ -42,6 +42,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
 import { useToast } from "@/components/ui/use-toast";
+import Axios from "@/Axios/Axios";
 
 const formSchema = teamRegistrationSchema;
 
@@ -94,7 +95,7 @@ const TeamRegistration = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await Axios.post(
           "/api/v1/teams/register-team",
           formData,
           {

@@ -114,7 +114,7 @@ const PlayerRegistration = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await Axios.post(
           "/api/v1/players/register-player",
           formData,
           {
