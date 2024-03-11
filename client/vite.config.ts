@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://62.72.30.207:8000/api",
+      "/api": "https://api.insidekeys.com/",
     },
   },
   resolve: {
