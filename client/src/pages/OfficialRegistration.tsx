@@ -53,15 +53,15 @@ const OfficialRegistration = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "Rakesh",
-      middleName: "Bhim",
-      lastName: "kumar",
-      email: "rakehs@gmail.com",
-      phoneNo: "8965874596",
-      passingYear: "2300",
-      gender: "m",
-      adharNumber: "7896587456",
-      password: "toosecure",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      email: "",
+      phoneNo: "",
+      passingYear: "",
+      gender: "",
+      adharNumber: "",
+      password: "",
     },
   });
 
