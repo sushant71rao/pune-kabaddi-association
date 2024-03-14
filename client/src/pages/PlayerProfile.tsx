@@ -174,11 +174,9 @@ const PlayerProfile = () => {
   const FileUpdate = useMutation({
     mutationKey: ["fileupdate"],
     mutationFn: async (files: any) => {
-      // console.log(Object.keys(files));
-
       try {
         let response = await Axios.patch(
-          `/api/v1/players/update-files/`,
+          `/api/v1/players/update-files/${id}`,
           files,
           {
             // withCredentials: true,
