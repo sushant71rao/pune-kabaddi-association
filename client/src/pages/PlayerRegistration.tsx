@@ -418,7 +418,7 @@ const PlayerRegistration = () => {
               name="playingSkill"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Playing Skill*</FormLabel>
+                  <FormLabel>Playing Skill</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}

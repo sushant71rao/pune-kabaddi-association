@@ -57,7 +57,7 @@ const Header = () => {
           <div className="w-36">
             <img src="/assets/logo.png" width={80} height={38} alt="logo" />
           </div>
-          <nav className="md:flex md:flex-between hidden w-full max-w-xl">
+          <nav className="lg:flex lg:flex-between hidden w-full max-w-xl">
             <NavItems />
           </nav>
           <div className="flex w-32 justify-end gap-3">

@@ -95,7 +95,6 @@ const registerPlayer = asyncHandler(async (req, res) => {
       lastName,
       teamName,
       gender,
-      playingSkill,
       adharNumber,
       email,
       phoneNo,
