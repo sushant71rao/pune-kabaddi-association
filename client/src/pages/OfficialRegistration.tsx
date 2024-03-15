@@ -88,7 +88,7 @@ const OfficialRegistration = () => {
           const value = officialData[validKey];
 
           if (validKey === "birthDate" && value instanceof Date) {
-            formData.append(validKey, value.toISOString());
+            formData.append(validKey, value);
           } else if (typeof value === "string" || typeof value === "number") {
             formData.append(validKey, value.toString());
           } else {
