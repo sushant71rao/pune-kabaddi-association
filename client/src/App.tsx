@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import PlayerProfile from "./pages/PlayerProfile";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
   let { role } = useContext(AuthContext);
@@ -36,11 +37,12 @@ function App() {
                 element={<OfficialRegistration />}
               />
               <Route path="/team-registration" element={<TeamRegistration />} />
-              {role == "admin" && <></>}
+              <Route path="/profile" element={<Profile></Profile>} />
               <Route path="admin/player/:id" element={<PlayerProfile />} />
               <Route path="admin/officials" element={<Officials />} />
               <Route path="admin/teams" element={<Teams />} />
               <Route path="admin/players" element={<Players />} />
+              {role == "admin" && <></>}
             </Routes>
             <Footer />
           </>

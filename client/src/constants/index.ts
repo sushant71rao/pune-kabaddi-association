@@ -27,3 +27,12 @@ export const AdminLinks = [
     route: "/admin/officials",
   },
 ];
+
+export const profileFields = [
+  "phoneNo",
+  "birthDate",
+  "gender",
+  "teamName",
+  "playingSkill",
+  "adharNumber",
+];

@@ -6,6 +6,12 @@ export type User = {
   phoneNo: String;
   avatar: String;
   teamName?: String;
+  playingSkill: String;
+  gender: String;
+  adharNumber: String;
+  birthDate: Date;
+  birthCertificate: String;
+  adharCard: String;
 };
 export type Team = {
   teamName: String;

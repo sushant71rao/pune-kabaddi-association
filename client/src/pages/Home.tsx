@@ -7,7 +7,7 @@ import { TeamsCarousel } from "@/components/home/TeamsCarousel"
 
 const Home = () => {
   return (
-    <div className="mt-24">
+    <div className="">
 
       <Hero />
       <RegisterSingIn />
