@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 export const verifyJWT = (Model) =>
   asyncHandler(async (req, _, next) => {
     try {
+      // console.log(req.header("Authorization"));
       const token =
         req.cookies?.accessToken ||
         req.header("Authorization")?.replace("Bearer", "");
@@ -32,6 +33,3 @@ export const verifyJWT = (Model) =>
       throw new ApiError(401, error?.message || "invalid access token");
     }
   });
-
-
-
