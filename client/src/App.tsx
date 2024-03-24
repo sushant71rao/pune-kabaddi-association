@@ -15,6 +15,7 @@ import PlayerProfile from "./pages/PlayerProfile";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.tsx";
 import Profile from "./pages/Profile.tsx";
+import IDPage from "./pages/IDPage.tsx";
 
 function App() {
   let { role } = useContext(AuthContext);
@@ -36,6 +37,7 @@ function App() {
                 path="/official-registration"
                 element={<OfficialRegistration />}
               />
+              <Route path="/id-card/:id" element={<IDPage></IDPage>} />
               <Route path="/team-registration" element={<TeamRegistration />} />
               <Route path="/profile" element={<Profile></Profile>} />
               <Route path="admin/player/:id" element={<PlayerProfile />} />

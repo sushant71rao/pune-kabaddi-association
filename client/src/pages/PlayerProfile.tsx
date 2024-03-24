@@ -74,7 +74,7 @@ const PlayerProfile = () => {
     queryFn: async () => {
       try {
         const response = await Axios.get(`/api/v1/players/get-player/${id}`);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         return response.data.data as PlayerType;
       } catch (error) {
         console.log("error while fetching teams", error);

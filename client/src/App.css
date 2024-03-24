@@ -6,3 +6,12 @@ body {
 .rdp-vhidden {
   @apply hidden;
 }
+
+.heading {
+  @apply font-[500];
+}
+.white-id-bg {
+  background: url("/assets/logo.png") no-repeat 55%;
+  background-blend-mode: overlay;
+  background-size: contain;
+}

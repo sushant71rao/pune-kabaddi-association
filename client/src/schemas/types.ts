@@ -1,4 +1,5 @@
 export type User = {
+  _id: String;
   firstName: String;
   middleName: String;
   lastName: String;

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type Player = {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -19,6 +20,7 @@ type Player = {
   gender: string;
   phoneNo: string;
   dateOfBirth: Date;
+  idCard: string;
 };
 
 export const columns: ColumnDef<Player>[] = [
@@ -50,6 +52,17 @@ export const columns: ColumnDef<Player>[] = [
   {
     header: "ID",
     accessorKey: "_id",
+  },
+  {
+    header: "ID-CARD",
+    accessorKey: "idCard",
+    cell: ({ row }) => {
+      return (
+        <Link to={`/id-card/${row?.getValue("_id")}`}>
+          <Button>ID CARD</Button>
+        </Link>
+      );
+    },
   },
   {
     header: ({ column }) => {
