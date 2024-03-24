@@ -5,13 +5,13 @@ import { Menu } from "lucide-react";
 
 const MobileNav = () => {
   return (
-    <nav className="md:hidden block">
+    <nav className="lg:hidden block">
       <Sheet>
         <SheetTrigger className="align-middle h-full">
           <Menu className="my-auto mx-4 " />
         </SheetTrigger>
         <SheetContent className="flex flex-col gap-6 bg-white md:hidden">
-          <img src="/assets/logo.png" alt="logo" width={52} />
+          <img src="/assets/logo.png" alt="logo" />
           <Separator className="border border-gray-50" />
           <NavItems />
         </SheetContent>

@@ -82,7 +82,7 @@ const registerTeam = asyncHandler(async (req, res) => {
 
 const getAllTeams = asyncHandler(async (req, res) => {
   const teams = await Team.find();
-  console.log("hit at search teams");
+
   return res
     .status(201)
     .json(new ApiResponse(200, teams, "successfully received all teams"));

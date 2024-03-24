@@ -25,7 +25,6 @@ export const verifyJWT = (Model) =>
         throw new ApiError(401, "Invalid access token");
       }
 
-      console.log("user", user);
 
       req.user = user;
       next();

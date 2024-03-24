@@ -6,3 +6,5 @@ It includes: Error handling, File uploading (multer, cloudinary), handling api r
 --> should all teams data visible
 --> galler images fit properly
 --> Award necessary ? how to display
+
+pm2 start npm --name kabadi-association -- start

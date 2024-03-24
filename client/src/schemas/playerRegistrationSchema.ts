@@ -36,9 +36,7 @@ export const playerRegistrationSchema = z.object({
     message: "Invalid gender.",
   }),
   teamName: z.string().min(1, { message: "Team Name is required." }),
-  playingSkill: z.string().min(1, {
-    message: "Playing Position is required.",
-  }),
+  playingSkill: z.string(),
   adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
   adharCard: z
     .any()

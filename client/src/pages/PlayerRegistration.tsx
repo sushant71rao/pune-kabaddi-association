@@ -57,20 +57,20 @@ const PlayerRegistration = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "Rutwik",
-      middleName: "Babaji",
-      lastName: "Shinde",
-      email: "rutwik@gmail.com",
-      phoneNo: "7896587458",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      email: "",
+      phoneNo: "",
       avatar: "",
       // birthDate: null, // Assuming birthDate is a Date object
-      gender: "m",
+      gender: "",
       teamName: "",
-      playingSkill: "raider",
-      adharNumber: "789632587452",
+      playingSkill: "",
+      adharNumber: "",
       adharCard: "",
       birthCertificate: "",
-      password: "nopassword",
+      password: "",
       achievements: [
         { achievementYear: "", achievementTitle: "", achievementDocument: "" },
       ],
@@ -114,7 +114,7 @@ const PlayerRegistration = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await Axios.post(
           "/api/v1/players/register-player",
           formData,
           {
@@ -328,7 +328,7 @@ const PlayerRegistration = () => {
                           field.onChange(date);
                         }}
                         fromYear={1960}
-                        toYear={2030}
+                        toYear={2020}
                       />
                     </PopoverContent>
                   </Popover>
@@ -418,7 +418,7 @@ const PlayerRegistration = () => {
               name="playingSkill"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Playing Skill*</FormLabel>
+                  <FormLabel>Playing Skill</FormLabel>
 
                   <Select
                     onValueChange={field.onChange}

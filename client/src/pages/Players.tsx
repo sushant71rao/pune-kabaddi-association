@@ -3,13 +3,12 @@ import { columns } from "@/components/admin/Players/columns";
 import PeopleDataTable from "@/components/admin/Players/data-table";
 
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 const Players = () => {
   const fetchPlayerQuery = useQuery({
     queryKey: ["Players"],
     queryFn: async () => {
-      const response = await Axios.get("/api/v1/players/get-players");
+      const response = await Axios.get("api/v1/players/get-players");
       return response?.data;
     },
   });

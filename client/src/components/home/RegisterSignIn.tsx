@@ -13,7 +13,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -32,7 +31,6 @@ import { useForm } from "react-hook-form";
 import signInSchema from "@/schemas/signInSchema";
 import * as z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
@@ -40,7 +38,7 @@ import { AuthContext } from "../../../context/AuthContext";
 const FormSchema = signInSchema;
 
 const RegisterSingIn = () => {
-  let { getuser, user, getteam } = useContext(AuthContext);
+  let { getuser, getteam } = useContext(AuthContext);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

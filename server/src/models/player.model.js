@@ -46,7 +46,6 @@ const playerSchema = new mongoose.Schema(
     },
     teamName: {
       type: String,
-      minlength: [1, "Team Name is required."],
     },
     playingSkill: {
       type: String,

@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 const NavItems = () => {
   //   const navigate = useNavigate();
   let { role } = useContext(AuthContext);
+  console.log(role);
   let Links: { route: string; label: string }[] = headerLinks;
   // if (role == "admin") {
     Links = headerLinks.concat(AdminLinks);

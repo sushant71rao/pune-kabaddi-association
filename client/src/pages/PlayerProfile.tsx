@@ -11,11 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import {
   Select,
   SelectContent,
@@ -25,12 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
-import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod";
@@ -120,42 +112,13 @@ const PlayerProfile = () => {
 
   const registerPlayer = async (playerData: z.infer<typeof formSchema>) => {
     {
-      const formData = new FormData();
-      for (const key in playerData) {
-        // if (key === "adharCard") {
-        //   const adharCardFile = (playerData[key] as FileList)[0];
-        //   formData.append(key, adharCardFile);
-        // } else if (key == "avatar") {
-        //   const avatarFile = (playerData[key] as FileList)[0];
-        //   formData.append(key, avatarFile);
-        // } else if (key == "birthCertificate") {
-        //   const birthCertificateFile = (playerData[key] as FileList)[0];
-        //   formData.append(key, birthCertificateFile);
-        // }
-        // else if(key =='achievementDocument'){
-        //   const achievementDocumentFile = (playerData[key] as FileList)[0];
-        //   formData.append(key, achievementDocumentFile)
-        // }
-        // else {
-        //   // Use keyof to ensure that key is a valid property of playerData
-        //   const validKey = key as keyof typeof playerData;
-        //   const value = playerData[validKey];
-        //   if (validKey === "birthDate" && value instanceof Date) {
-        //     formData.append(validKey, value.toISOString());
-        //   } else if (typeof value === "string" || typeof value === "number") {
-        //     formData.append(validKey, value.toString());
-        //   } else {
-        //     console.warn(`Unsupported type for field '${validKey}'`);
-        //   }
-        // }
-      }
-
-      let fomdata = form.getValues();
+      console.log(playerData);
+      let formData = form.getValues();
       try {
         const response = await Axios.patch(
           `/api/v1/players/update-player-details/${id}`,
           {
-            ...fomdata,
+            ...formData,
           }
         );
         return response.data;
