@@ -1,5 +1,5 @@
-import { AuthContext } from "../../context/AuthContext";
-import { useContext, useEffect, useState } from "react";
+// import { AuthContext } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
 import translate from "translate";
 import QRCode from "react-qr-code";
 import { User } from "@/schemas/types";
