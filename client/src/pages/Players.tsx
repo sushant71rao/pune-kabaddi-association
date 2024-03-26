@@ -16,7 +16,7 @@ const Players = () => {
   const data = fetchPlayerQuery.isSuccess ? fetchPlayerQuery.data.data : [{}];
 
   return (
-    <div className="container py-10 mx-auto mt-20">
+    <div className="container py-10 mx-auto">
       <PeopleDataTable columns={columns} data={data} />
     </div>
   );

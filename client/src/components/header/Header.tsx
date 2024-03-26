@@ -48,14 +48,17 @@ const Header = () => {
 
   return (
     <>
+      {/* <Image></Image> */}
       <header
-        className={`z-10 w-full bg-white border-b p-4 fixed top-0 transition-transform ${
+        className={`z-10 w-full bg-white border-b p-4 sticky  top-0 transition-transform ${
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="wrapper flex items-center justify-between">
           <div className="w-36">
-            <img src="/assets/logo.png" width={80} height={38} alt="logo" />
+            <Link to={"/"}>
+              <img src="/assets/logo.png" width={80} height={38} alt="logo" />
+            </Link>
           </div>
           <nav className="lg:flex lg:flex-between hidden w-full max-w-xl">
             <NavItems />
@@ -76,12 +79,14 @@ const Header = () => {
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem>
-                    Profile{" "}
-                    <DropdownMenuShortcut>
-                      <User />
-                    </DropdownMenuShortcut>
-                  </DropdownMenuItem>
+                  <Link to={"/profile"}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      Profile{" "}
+                      <DropdownMenuShortcut>
+                        <User />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     Log out{" "}

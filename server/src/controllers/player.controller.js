@@ -241,10 +241,39 @@ const logoutPlayer = asyncHandler(async (req, res) => {
 });
 
 const updateFiles = asyncHandler(async (req, res, next) => {
-  console.log(req?.files);
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  const adharCardLocalPath = req.files?.aadharCard?.[0]?.path;
+  const birthCertificateLocalPath = req.files?.birthCertificate?.[0]?.path;
+
+  if (avatarLocalPath) {
+    let avatar = await uploadOnCloudinary(avatarLocalPath);
+    console.log(avatar);
+    let res = await Player?.findByIdAndUpdate(req?.params?.id, {
+      $set: {
+        avatar: avatar?.url,
+      },
+    });
+
+  }
+  if (adharCardLocalPath) {
+    let aadhar = await uploadOnCloudinary(adharCardLocalPath);
+    await Player?.findByIdAndUpdate(req?.params?.id, {
+      $set: {
+        adharCard: aadhar?.url,
+      },
+    });
+  }
+  if (birthCertificateLocalPath) {
+    let birth = await uploadOnCloudinary(birthCertificateLocalPath);
+    await Player?.findByIdAndUpdate(req?.params?.id, {
+      $set: {
+        birthCertificate: birth?.url,
+      },
+    });
+  }
   res.status(200).json({
     success: true,
-    message: "Hereee",
+    message: "Files Updated Successfully",
   });
 });
 

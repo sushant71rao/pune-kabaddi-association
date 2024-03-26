@@ -66,7 +66,7 @@ const PlayerProfile = () => {
     queryFn: async () => {
       try {
         const response = await Axios.get(`/api/v1/players/get-player/${id}`);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         return response.data.data as PlayerType;
       } catch (error) {
         console.log("error while fetching teams", error);
@@ -137,11 +137,9 @@ const PlayerProfile = () => {
   const FileUpdate = useMutation({
     mutationKey: ["fileupdate"],
     mutationFn: async (files: any) => {
-      // console.log(Object.keys(files));
-
       try {
         let response = await Axios.patch(
-          `/api/v1/players/update-files/`,
+          `/api/v1/players/update-files/${id}`,
           files,
           {
             // withCredentials: true,

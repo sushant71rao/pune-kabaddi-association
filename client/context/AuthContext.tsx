@@ -25,9 +25,9 @@ export const AuthContext = createContext({} as iContext);
 export const useAuthContext = () => React.useContext(AuthContext);
 
 const AuthContextProvider = ({ children }: Props) => {
-  let localuser: User = {} as User;
-  let localteam: Team = {} as Team;
-  let localrole: string = "";
+  let localuser: User | undefined;
+  let localteam: Team | undefined;
+  let localrole: string | undefined;
   if (localStorage.getItem("team")) {
     localteam = JSON.parse(localStorage.getItem("team") || "");
   }
