@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 import LoginUtil from "../utils/LoginUtil.js";
+import { Official } from "../models/official.model.js";
 
 const generateAccessAndRefreshToken = async (playerId) => {
   try {
@@ -192,19 +193,16 @@ const getCurrentPlayer = asyncHandler(async (req, res) => {
 });
 
 const updatePlayerDetails = asyncHandler(async (req, res) => {
-  const { firstName, email } = req.body;
-
-  if (!firstName || !email) {
-    throw new ApiError(400, "All fields are required");
-  }
+  const { _id, ...rest } = req.body;
+  // if (!firstName || !email) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
 
   const player = await Player.findByIdAndUpdate(
-    console.log(req.player),
-    req.player?._id,
+    req.params?.id,
     {
       $set: {
-        firstName,
-        email: email,
+        ...rest,
       },
     },
     { new: true }
@@ -216,7 +214,7 @@ const updatePlayerDetails = asyncHandler(async (req, res) => {
 });
 
 const logoutPlayer = asyncHandler(async (req, res) => {
-  await Player.findByIdAndUpdate(
+  let player = await Player.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -227,6 +225,23 @@ const logoutPlayer = asyncHandler(async (req, res) => {
       new: true,
     }
   );
+
+  if (!player) {
+    player = await Official?.findByIdAndUpdate(
+      req?.user?._id,
+      {
+        $set: {
+          refreshToken: undefined,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (!player) {
+      return next(new ApiError(404, "No User Found"));
+    }
+  }
 
   const options = {
     httpOnly: true,
@@ -253,7 +268,6 @@ const updateFiles = asyncHandler(async (req, res, next) => {
         avatar: avatar?.url,
       },
     });
-
   }
   if (adharCardLocalPath) {
     let aadhar = await uploadOnCloudinary(adharCardLocalPath);

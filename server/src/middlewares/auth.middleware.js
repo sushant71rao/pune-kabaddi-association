@@ -1,9 +1,10 @@
+import { Official } from "../models/official.model.js";
 import { Player } from "../models/player.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
-export const verifyJWT = (Model) =>
+export const verifyJWT = () =>
   asyncHandler(async (req, _, next) => {
     try {
       // console.log(req.header("Authorization"));
@@ -17,14 +18,18 @@ export const verifyJWT = (Model) =>
 
       const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-      const user = await Model.findById(decodedToken?._id)
+      let user = await Player.findById(decodedToken?._id)
         .select("-password -refreshToken")
         .exec();
 
       if (!user) {
-        throw new ApiError(401, "Invalid access token");
+        user = await Official.findById(decodedToken?._id)
+          .select("-password -refreshToken")
+          .exec();
+        if (!user) {
+          throw new ApiError(401, "Invalid access token");
+        }
       }
-
 
       req.user = user;
       next();

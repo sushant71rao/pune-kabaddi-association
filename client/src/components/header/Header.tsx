@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOutIcon, User } from "lucide-react";
+import Axios from "@/Axios/Axios";
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -42,8 +43,9 @@ const Header = () => {
   // console.log(user);
   // const queryClient = useQueryClient();
 
-  const handleLogout = async () => {
-    logoutUser!();
+  const handleLogout = () => {
+    console.log("hii");
+    logoutUser();
   };
 
   return (

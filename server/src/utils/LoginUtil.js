@@ -9,7 +9,7 @@ const generateAccessAndRefreshToken = async (model, id) => {
     // console.log(user, "here in generate fn");
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
-
+    // console.log(accessToken, "is the access token");
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
@@ -35,17 +35,19 @@ let LoginUtil = (Model) => {
     if (!user) {
       throw new ApiError(404, "user does not exists");
     }
-
     const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
       throw new ApiError(401, "Invalid user credentials");
     }
 
+    // console.log(user);
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       Model,
       user._id
     );
+
+    // console.log(accessToken);
 
     const LoggedInUser = await Model.findById(user._id).select(
       "-password -refresh"

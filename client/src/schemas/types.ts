@@ -1,6 +1,7 @@
 export type User = {
   _id: String;
   firstName: String;
+  isAdmin?: Boolean;
   middleName: String;
   lastName: String;
   email: String;
