@@ -59,9 +59,9 @@ const RegisterSingIn = () => {
       const resdata = response?.data;
 
       if (link == "teams") {
-        getteam?.(resdata?.data?.user, link);
+        getteam?.(resdata?.data?.user);
       } else {
-        getuser?.(resdata?.data?.user, link);
+        getuser?.(resdata?.data?.user);
       }
       // console.log(user);
     } catch (error) {

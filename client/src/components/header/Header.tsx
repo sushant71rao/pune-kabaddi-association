@@ -19,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOutIcon, User } from "lucide-react";
-import Axios from "@/Axios/Axios";
 
 const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
