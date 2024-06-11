@@ -18,7 +18,7 @@ router.route("/get-teams").get(getAllTeams);
 router.route("/login").post(LoginTeam);
 
 // // Secured route
-// router.route("/logout").post(verifyJWT, logoutUser)
+// router.route("/logout").post(verifyJWT, logoutUser);
 // router.route("/refresh-token").post( refreshAccessToken)
 
 export default router;

@@ -38,7 +38,7 @@ const Header = () => {
     };
   }, [prevScrollPos, visible]);
 
-  let { user, logoutUser } = useContext(AuthContext);
+  let { user, team, logoutUser } = useContext(AuthContext);
   // console.log(user);
   // const queryClient = useQueryClient();
 

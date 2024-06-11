@@ -14,6 +14,7 @@ type iContext = {
   getuser?: (user: User) => void;
   getteam?: (team: Team) => void;
   logoutUser: () => Promise<void>;
+  logoutTeam: () => Promise<void>;
 };
 
 type Props = {
@@ -52,6 +53,19 @@ const AuthContextProvider = ({ children }: Props) => {
 
     setUser({ team: team });
   };
+  let logoutTeam = async () => {
+    try {
+      // console.log("Heree");
+
+      let res = await Axios.post("/api/v1/teams/logout");
+      console.log(res);
+      // console.log("Heree");
+      localStorage.removeItem("team");
+      setUser({});
+    } catch (error) {
+      console.warn(error);
+    }
+  };
   let logoutUser = async () => {
     try {
       // console.log("Heree");
@@ -66,7 +80,9 @@ const AuthContextProvider = ({ children }: Props) => {
     }
   };
   return (
-    <AuthContext.Provider value={{ ...user, getteam, getuser, logoutUser }}>
+    <AuthContext.Provider
+      value={{ ...user, getteam, getuser, logoutUser, logoutTeam }}
+    >
       {children}
     </AuthContext.Provider>
   );

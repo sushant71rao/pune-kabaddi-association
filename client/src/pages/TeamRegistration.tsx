@@ -2,7 +2,6 @@
 
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
 import {
   Form,
   FormControl,
@@ -11,11 +10,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Check, ChevronsUpDown } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Select,
   SelectContent,
@@ -43,6 +51,8 @@ import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
 import { useToast } from "@/components/ui/use-toast";
 import Axios from "@/Axios/Axios";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
 
 const formSchema = teamRegistrationSchema;
 
@@ -57,7 +67,7 @@ const TeamRegistration = () => {
       phoneNo: "",
       address: "",
       category: "",
-      ageGroup: "",
+      ageGroup: [],
       pinCode: "",
       authorizedPersonName: "",
       authorizedPersonPhoneNo: "",
@@ -68,12 +78,34 @@ const TeamRegistration = () => {
     },
   });
 
+  const items = [
+    {
+      id: "subJunior",
+      label: "Sub Junior",
+    },
+    {
+      id: "junior",
+      label: "Junior",
+    },
+    {
+      id: "open",
+      label: "Open",
+    },
+  ] as const;
+
+  const PinCodes = [
+    411013, 412029, 411028, 412307, 411036, 411040, 411014, 411001, 411011,
+    411009, 411024, 411041, 411038, 411003, 411053, 411004, 411055, 411005,
+    410056, 411018, 411012, 411019, 410506, 411015, 411020, 411017, 411026,
+    411039, 412061, 412105, 410401, 410505, 410502, 411046, 413801, 410014,
+    411002, 410038, 411000, 412206, 412212, 412108, 413106, 413102, 413133,
+    412301,
+  ];
   form.watch();
 
   const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
     {
       const formData = new FormData();
-
       for (const key in teamData) {
         if (key === "logo") {
           const logoFile = (teamData[key] as FileList)[0];
@@ -81,18 +113,22 @@ const TeamRegistration = () => {
         } else {
           // Use keyof to ensure that key is a valid property of teamData
           const validKey = key as keyof typeof teamData;
+
           const value = teamData[validKey];
 
           if (validKey === "startingYear" && value instanceof Date) {
             formData.append(validKey, value.toISOString());
           } else if (typeof value === "string" || typeof value === "number") {
             formData.append(validKey, value.toString());
+          } else if (typeof value === typeof []) {
+            formData.append(validKey, JSON.stringify(value));
           } else {
             console.warn(`Unsupported type for field '${validKey}'`);
           }
         }
       }
 
+      console.log(teamData);
       try {
         const response = await Axios.post(
           "/api/v1/teams/register-team",
@@ -106,10 +142,11 @@ const TeamRegistration = () => {
 
         return response.data;
       } catch (error) {
+        console.log(error);
         if (axios.isAxiosError(error) && error.response?.status === 409) {
           throw new Error("Team Name or Email already exists");
         } else {
-          throw new Error("Team registration failed. Please try again.");
+          throw new Error("Team registration failed. Please try again");
         }
       }
     }
@@ -133,11 +170,11 @@ const TeamRegistration = () => {
       });
     },
   });
-
+  const [open, setOpen] = useState(false);
   const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
-    console.log(teamData);
+    // console.log(teamData);
     registerTeamMutation.mutate(teamData);
   };
   return (
@@ -244,12 +281,15 @@ const TeamRegistration = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown-buttons"
                         selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
+                        onSelect={(date) => {
+                          // setDate(date);
+                          // calculateAge(date);
+                          field.onChange(date);
+                        }}
+                        fromYear={1960}
+                        toYear={2024}
                       />
                     </PopoverContent>
                   </Popover>
@@ -258,7 +298,7 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Age Group */}
+            {/* Category */}
             <FormField
               control={form.control}
               name="category"
@@ -287,32 +327,47 @@ const TeamRegistration = () => {
               )}
             />
 
-            {/* Category */}
+            {/* Age Group */}
             <FormField
               control={form.control}
               name="ageGroup"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Age Group*</FormLabel>
-
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select Age Group" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormMessage />
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="subJunior">Sub Junior</SelectItem>
-                        <SelectItem value="junior">Junior</SelectItem>
-                        <SelectItem value="open">Open</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  {items.map((item) => (
+                    <FormField
+                      key={item.id}
+                      control={form.control}
+                      name="ageGroup"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, item.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item.id
+                                        )
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {item.label}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -343,8 +398,54 @@ const TeamRegistration = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>pinCode*</FormLabel>
-
-                  <Select
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[200px] justify-between"
+                      >
+                        {field?.value
+                          ? PinCodes.find(
+                              (pin) => pin?.toString() === field?.value
+                            )
+                          : "Select Pincode"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Select PinCode" />
+                        <CommandList>
+                          <CommandEmpty>No framework found.</CommandEmpty>
+                          <CommandGroup>
+                            {PinCodes.map((pin) => (
+                              <CommandItem
+                                key={pin?.toString()}
+                                value={pin?.toString()}
+                                onSelect={(currentValue) => {
+                                  field.onChange(currentValue);
+                                  setOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === pin?.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {pin}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {/* <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -356,11 +457,18 @@ const TeamRegistration = () => {
                     <FormMessage />
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="789654">411 355</SelectItem>
-                        <SelectItem value="758965">789 456</SelectItem>
+                        {PinCodes?.map((ele) => {
+                          return (
+                            <>
+                              <SelectItem value={ele.toString()}>
+                                {ele}
+                              </SelectItem>
+                            </>
+                          );
+                        })}
                       </SelectGroup>
                     </SelectContent>
-                  </Select>
+                  </Select> */}
                 </FormItem>
               )}
             />
