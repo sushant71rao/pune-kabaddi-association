@@ -1,5 +1,5 @@
 import { Router } from "express";
-// import { upload } from "../middlewares/multer.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import {
   LoginOfficial,
   registerOfficial,
@@ -9,11 +9,11 @@ import {
 const router = Router();
 
 router.route("/register-official").post(
-  // upload.fields([
-  //   { name: "avatar", maxCount: 1 },
-  //   { name: "adharCard", maxCount: 1 },
-  //   { name: "passingCertificate", maxCount: 1 },
-  // ]),
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "adharCard", maxCount: 1 },
+    { name: "passingCertificate", maxCount: 1 },
+  ]),
   registerOfficial
 );
 
