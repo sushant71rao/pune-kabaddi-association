@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const officialSchema = new mongoose.Schema(
   {
@@ -72,11 +73,13 @@ const officialSchema = new mongoose.Schema(
       type: String,
       minlength: [8, "Password must be at least 8 characters."],
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
-
-export const Official = mongoose.model("Official", officialSchema);
 
 officialSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
@@ -85,12 +88,13 @@ officialSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-officialSchema.method("isPasswordCorrect", async (password) => {
-  return await bcrypt.compare(this.password, password);
-});
+officialSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password); 
+};
 
 officialSchema.methods.generateAccessToken = function () {
-  return jwt.sign(
+  // console.log("hereee");
+  let token = jwt.sign(
     {
       _id: this._id,
       email: this.email,
@@ -102,6 +106,8 @@ officialSchema.methods.generateAccessToken = function () {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
   );
+  // console.log(token);
+  return token;
 };
 
 officialSchema.methods.generateRefreshToken = function () {
@@ -115,3 +121,5 @@ officialSchema.methods.generateRefreshToken = function () {
     }
   );
 };
+
+export const Official = mongoose.model("Official", officialSchema);

@@ -9,12 +9,12 @@ import Axios from "@/Axios/Axios";
 // };
 
 type iContext = {
-  role?: string;
   user?: User;
   team?: Team;
-  getuser?: (user: User, role: string) => void;
-  getteam?: (team: Team, role: string) => void;
-  logoutUser?: () => void;
+  getuser?: (user: User) => void;
+  getteam?: (team: Team) => void;
+  logoutUser: () => Promise<void>;
+  logoutTeam: () => Promise<void>;
 };
 
 type Props = {
@@ -27,50 +27,62 @@ export const useAuthContext = () => React.useContext(AuthContext);
 const AuthContextProvider = ({ children }: Props) => {
   let localuser: User | undefined;
   let localteam: Team | undefined;
-  let localrole: string | undefined;
+
   if (localStorage.getItem("team")) {
     localteam = JSON.parse(localStorage.getItem("team") || "");
   }
   if (localStorage.getItem("user")) {
     localuser = JSON.parse(localStorage.getItem("user") || "");
   }
-  if (localStorage.getItem("role")) {
-    localrole = JSON.parse(localStorage.getItem("role") || "");
-  }
 
   const [user, setUser] = useState<{
-    role?: string;
     user?: User;
     team?: Team;
   }>({
     user: localuser,
     team: localteam,
-    role: localrole || "",
   });
 
-  let getuser = (user: User, role: string) => {
+  let getuser = (user: User) => {
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("role", JSON.stringify(role));
-    setUser({ role: role, user: user });
+
+    setUser({ user: user });
   };
-  let getteam = (team: Team, role: string) => {
+  let getteam = (team: Team) => {
     localStorage.setItem("team", JSON.stringify(team));
-    localStorage.setItem("role", JSON.stringify(role));
-    setUser({ role: role, team: team });
+
+    setUser({ team: team });
+  };
+  let logoutTeam = async () => {
+    try {
+      // console.log("Heree");
+
+      let res = await Axios.post("/api/v1/teams/logout");
+      console.log(res);
+      // console.log("Heree");
+      localStorage.removeItem("team");
+      setUser({});
+    } catch (error) {
+      console.warn(error);
+    }
   };
   let logoutUser = async () => {
     try {
-      let res = await await Axios.post("/api/v1/players/logout-player");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-      setUser({});
+      // console.log("Heree");
+
+      let res = await Axios.post("/api/v1/players/logout");
       console.log(res);
+      // console.log("Heree");
+      localStorage.removeItem("user");
+      setUser({});
     } catch (error) {
       console.warn(error);
     }
   };
   return (
-    <AuthContext.Provider value={{ ...user, getteam, getuser, logoutUser }}>
+    <AuthContext.Provider
+      value={{ ...user, getteam, getuser, logoutUser, logoutTeam }}
+    >
       {children}
     </AuthContext.Provider>
   );

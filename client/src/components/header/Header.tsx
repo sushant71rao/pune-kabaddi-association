@@ -42,8 +42,9 @@ const Header = () => {
   // console.log(user);
   // const queryClient = useQueryClient();
 
-  const handleLogout = async () => {
-    logoutUser!();
+  const handleLogout = () => {
+    console.log("hii");
+    logoutUser();
   };
 
   return (

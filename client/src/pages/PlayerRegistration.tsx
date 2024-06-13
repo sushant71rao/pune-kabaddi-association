@@ -102,7 +102,6 @@ const PlayerRegistration = () => {
           // Use keyof to ensure that key is a valid property of playerData
           const validKey = key as keyof typeof playerData;
           const value = playerData[validKey];
-
           if (validKey === "birthDate" && value instanceof Date) {
             formData.append(validKey, value.toISOString());
           } else if (typeof value === "string" || typeof value === "number") {

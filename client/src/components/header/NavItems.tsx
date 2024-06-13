@@ -5,12 +5,12 @@ import { NavLink } from "react-router-dom";
 
 const NavItems = () => {
   //   const navigate = useNavigate();
-  let { role } = useContext(AuthContext);
-  console.log(role);
+  let { user } = useContext(AuthContext);
+  // console.log(role);
   let Links: { route: string; label: string }[] = headerLinks;
-  // if (role == "admin") {
+  if (user?.isAdmin) {
     Links = headerLinks.concat(AdminLinks);
-  // }
+  }
   return (
     <ul className="md:flex-between md:items-center md:justify-center flex w-full flex-col items-start gap-5 md:flex-row">
       {Links.map((link) => {

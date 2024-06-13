@@ -29,7 +29,7 @@ const teamSchema = new mongoose.Schema(
       required: true,
     },
     ageGroup: {
-      type: String,
+      type: [String],
       enum: ["subJunior", "junior", "open"],
       required: true,
     },

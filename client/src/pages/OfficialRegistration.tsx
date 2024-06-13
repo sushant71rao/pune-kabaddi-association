@@ -107,7 +107,7 @@ const OfficialRegistration = () => {
             },
           }
         );
-
+        console.log(response);
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 409) {

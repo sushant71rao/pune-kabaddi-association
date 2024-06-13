@@ -18,7 +18,7 @@ import Profile from "./pages/Profile.tsx";
 import IDPage from "./pages/IDPage.tsx";
 
 function App() {
-  let { role } = useContext(AuthContext);
+  let { user } = useContext(AuthContext);
   return (
     <Routes>
       <Route
@@ -40,11 +40,14 @@ function App() {
               <Route path="/id-card/:id" element={<IDPage></IDPage>} />
               <Route path="/team-registration" element={<TeamRegistration />} />
               <Route path="/profile" element={<Profile></Profile>} />
-              <Route path="admin/player/:id" element={<PlayerProfile />} />
-              <Route path="admin/officials" element={<Officials />} />
-              <Route path="admin/teams" element={<Teams />} />
-              <Route path="admin/players" element={<Players />} />
-              {role == "admin" && <></>}
+              {user?.isAdmin && (
+                <>
+                  <Route path="admin/player/:id" element={<PlayerProfile />} />
+                  <Route path="admin/officials" element={<Officials />} />
+                  <Route path="admin/teams" element={<Teams />} />
+                  <Route path="admin/players" element={<Players />} />
+                </>
+              )}
             </Routes>
             <Footer />
           </>

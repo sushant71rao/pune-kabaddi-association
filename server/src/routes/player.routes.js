@@ -42,7 +42,7 @@ router.route("/get-player/:id").get(getPlayer);
 router.route("/update-player-details/:id").patch(updatePlayerDetails);
 
 //secured routes
-router.route("/logout-player").post(verifyJWT(Player), logoutPlayer);
+router.route("/logout").post(verifyJWT(), logoutPlayer);
 router.route("/current-player").get(verifyJWT(Player), getCurrentPlayer);
 
 export default router;
