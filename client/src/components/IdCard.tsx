@@ -1,6 +1,4 @@
-
-import {  useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 
 import translate from "translate";
 import QRCode from "react-qr-code";
@@ -37,7 +35,7 @@ const IdCard = (prop: Prop) => {
       </div>
       <div ref={targetRef}>
         <div className=" flex flex-wrap gap-3 justify-center items-center">
-          <div className="flex flex-col w-[27rem] aspect-video">
+          <div className="flex flex-col w-[27rem]  aspect-video">
             <div className="bg-orange-300 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
               <img src="/assets/logo.png" width={57}></img>
               <div className="text-lg font-[600] tracking-wide">
@@ -48,7 +46,7 @@ const IdCard = (prop: Prop) => {
                 <img src="/assets/pkl.jpg" alt="logo" width={44}></img>
               </div>
             </div>
-            <div className="flex uppercase justify-between gap-6  bg-orange-50 p-2 border-[1px] border-black h-[11rem]">
+            <div className="flex uppercase justify-between gap-6  bg-orange-50 p-2 border-[1px]  border-black h-[12rem]">
               <div className="flex flex-col gap-2">
                 <img
                   src={String(prop?.user?.avatar || "")}
@@ -115,7 +113,7 @@ const IdCard = (prop: Prop) => {
                 <img src="/assets/pkl.jpg" alt="logo" width={44}></img>
               </div>
             </div>
-            <div className="flex flex-col uppercase gap-6  bg-orange-50 p-2 border-[1px] border-black w-full aspect h-[11rem]">
+            <div className="flex flex-col uppercase gap-6  bg-orange-50 p-2 border-[1px] border-black w-full aspect h-[12rem]">
               <div>
                 <span className="heading">Player Address : </span>
                 <span className="text-sm">{dummy?.pAddress}</span>
