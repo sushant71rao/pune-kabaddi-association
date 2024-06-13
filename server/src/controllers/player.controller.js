@@ -114,9 +114,11 @@ const registerPlayer = asyncHandler(async (req, res) => {
   }
   let avatarRes = await uploadFileToS3(avatar);
   let adharCardRes = await uploadFileToS3(adharCard);
-  let birthCertificateRes = await uploadFileToS3(birthCertificate);
+  let birthCertificateRes = birthCertificate
+    ? await uploadFileToS3(birthCertificate)
+    : "";
 
-  if (!avatarRes || !adharCardRes || !birthCertificateRes) {
+  if (!avatarRes || !adharCardRes) {
     throw new ApiError(
       400,
       "Avatar or Adhar card or Birth Certificate not uploaded on S3"

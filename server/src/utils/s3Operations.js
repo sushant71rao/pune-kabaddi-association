@@ -27,7 +27,7 @@ export const setCorsOptions = async () => {
         {
           AllowedHeaders: ["*"],
           AllowedMethods: ["PUT", "POST", "DELETE"],
-          AllowedOrigins: ["http://localhost:5173"],
+          AllowedOrigins: [process.env.CORS_ORIGIN],
           ExposeHeaders: ["x-amz-server-side-encryption"],
           MaxAgeSeconds: 3000,
         },
