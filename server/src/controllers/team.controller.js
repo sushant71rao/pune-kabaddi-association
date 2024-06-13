@@ -82,7 +82,7 @@ const registerTeam = asyncHandler(async (req, res) => {
 });
 
 const getAllTeams = asyncHandler(async (req, res) => {
-  const teams = await Team.find();
+  const teams = await Team.find({}, { teamName: 1 });
 
   return res
     .status(201)

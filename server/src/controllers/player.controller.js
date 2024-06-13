@@ -3,8 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { Player } from "../models/player.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
 import LoginUtil from "../utils/LoginUtil.js";
+import { uploadFileToS3 } from "../utils/s3Operations.js";
 import { Official } from "../models/official.model.js";
 
 const generateAccessAndRefreshToken = async (playerId) => {
@@ -73,7 +73,6 @@ const loginPlayer = asyncHandler(async (req, res) => {
 
 const registerPlayer = asyncHandler(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
-
   const {
     firstName,
     middleName,
@@ -105,44 +104,30 @@ const registerPlayer = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are required");
   }
+  console.log(req.files.avatar);
 
-  const existedPlayer = await Player.findOne({
-    email,
-  });
-
-  if (existedPlayer) {
-    throw new ApiError(409, "player with email all ready exists");
-  }
-
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const adharCardLocalPath = req.files?.adharCard[0]?.path;
-  const birthCertificateLocalPath = req.files?.birthCertificate?.[0]?.path;
-
-  if (!avatarLocalPath || !adharCardLocalPath) {
-    throw new ApiError(400, "Avatar and Adhar card are required");
-  }
-
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const adharCard = await uploadOnCloudinary(adharCardLocalPath);
-
-  let birthCertificate = "";
-
-  if (birthCertificateLocalPath) {
-    try {
-      birthCertificate = await uploadOnCloudinary(birthCertificateLocalPath);
-    } catch (error) {
-      console.error("Failed to upload birthCertificate:", error);
-    }
-  }
+  const avatar = req.files?.avatar[0];
+  const adharCard = req.files?.adharCard[0];
+  const birthCertificate = req.files?.birthCertificate?.[0];
 
   if (!avatar || !adharCard) {
-    throw new ApiError(400, "Avatar or Adhar card not uploaded on Cloudinary");
+    throw new ApiError(400, "Avatar and Adhar card are required");
+  }
+  let avatarRes = await uploadFileToS3(avatar);
+  let adharCardRes = await uploadFileToS3(adharCard);
+  let birthCertificateRes = await uploadFileToS3(birthCertificate);
+
+  if (!avatarRes || !adharCardRes || !birthCertificateRes) {
+    throw new ApiError(
+      400,
+      "Avatar or Adhar card or Birth Certificate not uploaded on S3"
+    );
   }
 
   const player = await Player.create({
-    avatar: avatar.url,
-    adharCard: adharCard.url,
-    birthCertificate: birthCertificate?.url || "",
+    avatar: avatarRes,
+    adharCard: adharCardRes,
+    birthCertificate: birthCertificateRes,
     email,
     birthDate,
     firstName,
@@ -157,15 +142,13 @@ const registerPlayer = asyncHandler(async (req, res) => {
     achievements,
   });
 
-  const createdPlayer = await Player.findById(player._id).select("-password ");
-
-  if (!createdPlayer) {
+  if (!player) {
     throw new ApiError("500", "something went wrong while creating the player");
   }
 
   return res
     .status(201)
-    .json(new ApiResponse(200, createdPlayer, "player created successfully"));
+    .json(new ApiResponse(200, player, "player created successfully"));
 });
 
 const getAllPlayers = asyncHandler(async (req, res) => {
