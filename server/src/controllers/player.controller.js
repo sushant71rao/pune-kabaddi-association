@@ -239,32 +239,32 @@ const logoutPlayer = asyncHandler(async (req, res) => {
 });
 
 const updateFiles = asyncHandler(async (req, res, next) => {
-  const avatarLocalPath = req.files?.avatar?.[0]?.path;
-  const adharCardLocalPath = req.files?.aadharCard?.[0]?.path;
-  const birthCertificateLocalPath = req.files?.birthCertificate?.[0]?.path;
+  const avatarLocalPath = req.files?.avatar?.[0];
+  const adharCardLocalPath = req.files?.aadharCard?.[0];
+  const birthCertificateLocalPath = req.files?.birthCertificate?.[0];
 
   if (avatarLocalPath) {
-    let avatar = await uploadOnCloudinary(avatarLocalPath);
-    console.log(avatar);
+    let avatar = await uploadFileToS3(avatarLocalPath);
+    // console.log(avatar);
     let res = await Player?.findByIdAndUpdate(req?.params?.id, {
       $set: {
-        avatar: avatar?.url,
+        avatar: avatar,
       },
     });
   }
   if (adharCardLocalPath) {
-    let aadhar = await uploadOnCloudinary(adharCardLocalPath);
+    let aadhar = await uploadFileToS3(adharCardLocalPath);
     await Player?.findByIdAndUpdate(req?.params?.id, {
       $set: {
-        adharCard: aadhar?.url,
+        adharCard: aadhar,
       },
     });
   }
   if (birthCertificateLocalPath) {
-    let birth = await uploadOnCloudinary(birthCertificateLocalPath);
+    let birth = await uploadFileToS3(birthCertificateLocalPath);
     await Player?.findByIdAndUpdate(req?.params?.id, {
       $set: {
-        birthCertificate: birth?.url,
+        birthCertificate: birth,
       },
     });
   }

@@ -153,6 +153,13 @@ const PlayerProfile = () => {
         console.log(err);
       }
     },
+    onSuccess: () => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Document Updated Successfully",
+      });
+    },
   });
 
   const registerPlayerMutation = useMutation({
