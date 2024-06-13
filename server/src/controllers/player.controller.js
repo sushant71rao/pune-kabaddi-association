@@ -1,7 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js ";
 import { ApiError } from "../utils/ApiError.js";
 import { Player } from "../models/player.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import LoginUtil from "../utils/LoginUtil.js";
 import { uploadFileToS3 } from "../utils/s3Operations.js";
