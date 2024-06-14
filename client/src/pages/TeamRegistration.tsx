@@ -104,11 +104,13 @@ const TeamRegistration = () => {
   form.watch();
 
   const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
+    // console.log(teamData);
     {
       const formData = new FormData();
       for (const key in teamData) {
         if (key === "logo") {
           const logoFile = (teamData[key] as FileList)[0];
+          // console.log(logoFile);
           formData.append(key, logoFile);
         } else {
           // Use keyof to ensure that key is a valid property of teamData
@@ -128,7 +130,7 @@ const TeamRegistration = () => {
         }
       }
 
-      console.log(teamData);
+      // console.log(formData);
       try {
         const response = await Axios.post(
           "/api/v1/teams/register-team",
