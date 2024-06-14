@@ -4,6 +4,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Team } from "../models/team.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import LoginUtil from "../utils/LoginUtil.js";
+import { uploadFileToS3 } from "../utils/s3Operations.js";
 
 const registerTeam = asyncHandler(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -39,13 +40,13 @@ const registerTeam = asyncHandler(async (req, res) => {
     throw new ApiError(409, "team name or email all ready exists");
   }
 
-  const logoLocalPath = req.files?.logo[0]?.path;
+  const logoLocalPath = req.files?.logo[0];
 
   if (!logoLocalPath) {
     throw new ApiError("400", "Logo image is required");
   }
 
-  const logo = await uploadOnCloudinary(logoLocalPath);
+  const logo = await uploadFileToS3(logoLocalPath);
 
   if (!logo) {
     throw new ApiError(400, "Logo not uploaded on cloudinary");
@@ -53,7 +54,7 @@ const registerTeam = asyncHandler(async (req, res) => {
   let pAgeGroup = JSON.parse(ageGroup);
   // console.log(pAgeGroup);
   const team = await Team.create({
-    logo: logo.url,
+    logo: logo,
     teamName,
     email,
     phoneNo,

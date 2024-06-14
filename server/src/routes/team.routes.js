@@ -4,15 +4,14 @@ import {
   getAllTeams,
   registerTeam,
 } from "../controllers/team.controller.js";
-// import { upload } from "../middlewares/multer.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 // import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/register-team").post(
-  // upload.fields([{ name: "logo", maxCount: 1 }]),
-  registerTeam
-);
+router
+  .route("/register-team")
+  .post(upload.fields([{ name: "logo", maxCount: 1 }]), registerTeam);
 
 router.route("/get-teams").get(getAllTeams);
 
