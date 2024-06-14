@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   Form,
@@ -47,16 +47,37 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
-import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
+import {
+  teamRegistrationSchema,
+  TeamType,
+} from "@/schemas/teamRegistrationSchema";
 
 import { useToast } from "@/components/ui/use-toast";
 import Axios from "@/Axios/Axios";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 const formSchema = teamRegistrationSchema;
 
-const TeamRegistration = () => {
+const TeamProfile = () => {
+  const { id } = useParams();
+
+  const fetchTeamQuery = useQuery<TeamType | undefined>({
+    queryKey: ["team"],
+    queryFn: async () => {
+      try {
+        const response = await Axios.get(`/api/v1/teams/get-team/${id}`);
+        // console.log(response.data.data);
+        return response.data.data as TeamType;
+      } catch (error) {
+        console.log("error while fetching teams", error);
+      }
+    },
+  });
+
+  let { data } = fetchTeamQuery;
+
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -176,14 +197,14 @@ const TeamRegistration = () => {
   const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
-    // console.log(teamData);
     registerTeamMutation.mutate(teamData);
   };
+
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
         <CardTitle className="text-3xl font-black text-slate-700">
-          Team Registration
+          Team Profile
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -447,6 +468,30 @@ const TeamRegistration = () => {
                       </Command>
                     </PopoverContent>
                   </Popover>
+                  {/* <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-[280px]">
+                        <SelectValue placeholder="Choose your pinCode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <FormMessage />
+                    <SelectContent>
+                      <SelectGroup>
+                        {PinCodes?.map((ele) => {
+                          return (
+                            <>
+                              <SelectItem value={ele.toString()}>
+                                {ele}
+                              </SelectItem>
+                            </>
+                          );
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select> */}
                 </FormItem>
               )}
             />
@@ -579,4 +624,4 @@ const TeamRegistration = () => {
   );
 };
 
-export default TeamRegistration;
+export default TeamProfile;

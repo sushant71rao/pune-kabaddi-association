@@ -16,6 +16,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.tsx";
 import Profile from "./pages/Profile.tsx";
 import IDPage from "./pages/IDPage.tsx";
+import TeamProfile from "./pages/TeamProfile.tsx";
 
 function App() {
   let { user } = useContext(AuthContext);
@@ -43,6 +44,8 @@ function App() {
               {user?.isAdmin && (
                 <>
                   <Route path="admin/player/:id" element={<PlayerProfile />} />
+                  <Route path="admin/team/:id" element={<TeamProfile />} />
+
                   <Route path="admin/officials" element={<Officials />} />
                   <Route path="admin/teams" element={<Teams />} />
                   <Route path="admin/players" element={<Players />} />

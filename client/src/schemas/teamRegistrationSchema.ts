@@ -61,3 +61,5 @@ export const teamRegistrationSchema = z.object({
 
   description: z.string(),
 });
+
+export type TeamType = z.infer<typeof teamRegistrationSchema>;

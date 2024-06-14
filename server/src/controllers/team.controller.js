@@ -1,6 +1,5 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Team } from "../models/team.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import LoginUtil from "../utils/LoginUtil.js";
@@ -83,7 +82,7 @@ const registerTeam = asyncHandler(async (req, res) => {
 });
 
 const getAllTeams = asyncHandler(async (req, res) => {
-  const teams = await Team.find({}, { teamName: 1 });
+  const teams = await Team.find();
 
   return res
     .status(201)
