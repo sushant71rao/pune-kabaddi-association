@@ -91,6 +91,12 @@ export const columns: ColumnDef<Player>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
+    header: "Team Name",
+    accessorKey: "teamName",
+
+    cell: ({ row }) => <div>{row.getValue("teamName")}</div>,
+  },
+  {
     header: "Phone No",
     accessorKey: "phoneNo",
   },

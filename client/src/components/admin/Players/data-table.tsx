@@ -47,7 +47,6 @@ export function PeopleDataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  console.log(rowSelection);
 
   const table = useReactTable({
     data,
@@ -79,6 +78,16 @@ export function PeopleDataTable<TData, TValue>({
           value={(table.getColumn("email")?.getFilterValue() as string) || ""}
           onChange={(e) => {
             table.getColumn("email")?.setFilterValue(e.target.value);
+          }}
+          className="max-w-sm mr-4"
+        />
+        <Input
+          placeholder="Filter Teams"
+          value={
+            (table.getColumn("teamName")?.getFilterValue() as string) || ""
+          }
+          onChange={(e) => {
+            table.getColumn("teamName")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm"
         />
