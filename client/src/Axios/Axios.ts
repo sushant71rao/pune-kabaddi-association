@@ -1,8 +1,8 @@
 import axios from "axios";
 
-let Axios = axios.create({
-  // baseURL: "https://www.api.insidekeys.com/",
-  baseURL: "http://localhost:8000/",
+const Axios = axios.create({
+  baseURL: import.meta.env.VITE_AXIOS_BASE_URL,
+
   withCredentials: true,
 });
 
