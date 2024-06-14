@@ -20,5 +20,8 @@ export type Team = {
   email: String;
   ageGroup: String;
   authorizedPersonName: String;
-  managerName: String;
+  managerName?: String;
+  address?: String;
+  pinCode?: String;
+  logo?: String;
 };

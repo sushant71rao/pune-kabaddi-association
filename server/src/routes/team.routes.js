@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   LoginTeam,
   getAllTeams,
+  getTeam,
   registerTeam,
 } from "../controllers/team.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -14,6 +15,7 @@ router
   .post(upload.fields([{ name: "logo", maxCount: 1 }]), registerTeam);
 
 router.route("/get-teams").get(getAllTeams);
+router.route("/teaminfo").post(getTeam);
 
 router.route("/login").post(LoginTeam);
 

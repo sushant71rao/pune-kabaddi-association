@@ -73,4 +73,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  .overlay {
+    background: url("../assets/watermark.png") no-repeat;
+    background-position: 50% 0%;
+  }
 }

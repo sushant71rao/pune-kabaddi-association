@@ -90,6 +90,20 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teams, "successfully received all teams"));
 });
 
+const getTeam = asyncHandler(async (req, res, next) => {
+  if (!req.body) {
+    return next(new ApiError(401, "No query provided in request"));
+  }
+  const team = await Team.findOne(req.body);
+  if (!team) {
+    return next(new ApiError(404, "No such user found"));
+  }
+  return res.status(200).json({
+    success: true,
+    team,
+  });
+});
+
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -120,4 +134,4 @@ const getAllTeams = asyncHandler(async (req, res) => {
 
 const LoginTeam = LoginUtil(Team);
 
-export { registerTeam, getAllTeams, LoginTeam };
+export { registerTeam, getAllTeams, LoginTeam, getTeam };

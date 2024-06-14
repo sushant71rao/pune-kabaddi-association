@@ -16,7 +16,7 @@ const teamSchema = new mongoose.Schema(
       required: true,
     },
     logo: {
-      type: String, // Assuming you save the file path or URL
+      type: String,
       required: true,
     },
     startingYear: {
@@ -56,6 +56,9 @@ const teamSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    address: {
+      type: String,
     },
     description: {
       type: String,
