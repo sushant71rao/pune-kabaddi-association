@@ -62,7 +62,11 @@ const IdCard = (prop: Prop) => {
               </div>
 
               <div className="mix-blend-darken">
-                <img src="/assets/pkl.jpg" alt="logo" width={44}></img>
+                <img
+                  src={getTeam?.data?.logo?.toString() || ""}
+                  alt="logo"
+                  width={44}
+                ></img>
               </div>
             </div>
             <div className="overlay flex uppercase justify-between gap-6  bg-blue-100 p-2 border-[1px]  border-black h-[12rem]">
