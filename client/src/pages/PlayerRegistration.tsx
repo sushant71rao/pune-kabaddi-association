@@ -36,7 +36,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod";
 import { playerRegistrationSchema } from "@/schemas/playerRegistrationSchema";
-import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
 import { Button } from "@/components/ui/button";
 

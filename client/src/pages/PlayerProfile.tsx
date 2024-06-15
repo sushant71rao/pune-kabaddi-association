@@ -55,7 +55,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const PlayerProfile = () => {
   const [profilePhoto, setProfilePhoto] = useState<File>();
