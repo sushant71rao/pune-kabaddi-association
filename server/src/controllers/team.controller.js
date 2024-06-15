@@ -1,7 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-
 import { Zone } from "../models/team.model.js";
 
 import { Team } from "../models/team.model.js";
@@ -94,8 +93,7 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teams, "successfully received all teams"));
 });
 
-
-const getTeam = asyncHandler(async (req, res, next) => {
+const getTeamByPin = asyncHandler(async (req, res, next) => {
   if (!req.body) {
     return next(new ApiError(401, "No query provided in request"));
   }
@@ -105,7 +103,6 @@ const getTeam = asyncHandler(async (req, res, next) => {
   }
   const pin = Number(team?.pinCode);
 
-  // console.log(pin);
   const zone = await Zone.findOne({ pincodes: pin }, { name: 1 });
   if (!zone) {
     return next(new ApiError(404, "No Zone Matched"));
@@ -190,7 +187,6 @@ const updateLogo = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -221,9 +217,6 @@ const updateLogo = asyncHandler(async (req, res, next) => {
 
 const LoginTeam = LoginUtil(Team);
 
-
-
-
 export {
   registerTeam,
   getAllTeams,
@@ -231,7 +224,6 @@ export {
   LoginTeam,
   updateLogo,
   updateTeamDetails,
-  getZone
-
+  getZone,
+  getTeamByPin,
 };
-

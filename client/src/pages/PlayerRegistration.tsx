@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 
 import { differenceInYears, format } from "date-fns";
-import { CalendarIcon, Plus, Trash } from "lucide-react";
+import { CalendarIcon, Check, ChevronsUpDown, Plus, Trash } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
@@ -49,10 +49,19 @@ const formSchema = playerRegistrationSchema;
 
 import { useToast } from "@/components/ui/use-toast";
 import Axios from "@/Axios/Axios";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 const PlayerRegistration = () => {
   const [openAge, setOpenAge] = useState<boolean | undefined>(false);
   const [date, setDate] = useState<Date | undefined>();
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -136,14 +145,18 @@ const PlayerRegistration = () => {
 
   const { toast } = useToast();
 
-  const fetchTeamsQuery = useQuery({
+  const {
+    data: teamData,
+    isPending: loadingTeams,
+    error: errorLoadingTeams,
+  } = useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
       try {
         const response = await Axios.get("/api/v1/teams/get-teams");
         return response.data;
       } catch (error) {
-        console.log("error while fetching teams", error);
+        console.log("error while fetching teams");
       }
     },
   });
@@ -373,40 +386,67 @@ const PlayerRegistration = () => {
               control={form.control}
               name="teamName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col ">
                   <FormLabel>Select Your Team*</FormLabel>
-
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="choose team" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormMessage />
-                    <SelectContent>
-                      {fetchTeamsQuery.isPending ? (
-                        <p>loading...</p>
-                      ) : fetchTeamsQuery.error ? (
-                        <p>error while loading data </p>
-                      ) : (
-                        fetchTeamsQuery?.data?.data?.map(
-                          (item: z.infer<typeof teamRegistrationSchema>) => {
-                            return (
-                              <SelectItem
-                                value={item.teamName}
-                                key={item.email}
-                              >
-                                {item.teamName}
-                              </SelectItem>
-                            );
-                          }
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className=" justify-between min-w-[300px] w-fit"
+                      >
+                        {field?.value
+                          ? teamData?.data?.find(
+                              (team: { teamName: string }) =>
+                                team.teamName?.toString() === field?.value
+                            )?.teamName
+                          : "Select Team"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Select Team" />
+                        {loadingTeams ? (
+                          <div className="flex justify-center p-4">
+                            <p>Loading teams</p>
+                          </div>
+                        ) : errorLoadingTeams ? (
+                          <div className="flex justify-center p-4 text-red-500">
+                            Error loading teams
+                          </div>
+                        ) : (
+                          <CommandList>
+                            <CommandEmpty>No team found.</CommandEmpty>
+                            <CommandGroup>
+                              {teamData?.data?.map(
+                                (team: { _id: number; teamName: string }) => (
+                                  <CommandItem
+                                    key={team._id}
+                                    value={team.teamName}
+                                    onSelect={(currentValue) => {
+                                      field.onChange(currentValue);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        field.value === team.teamName
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      }`}
+                                    />
+                                    {team.teamName}
+                                  </CommandItem>
+                                )
+                              )}
+                            </CommandGroup>
+                          </CommandList>
+                        )}
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormItem>
               )}
             />

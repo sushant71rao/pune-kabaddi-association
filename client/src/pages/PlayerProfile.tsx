@@ -26,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod";
-import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
 
 import { Button } from "@/components/ui/button";
 
@@ -42,14 +41,35 @@ import DocumentView from "@/components/DocumentView";
 import DocumentDownload from "./DocumentDownload";
 import Axios from "@/Axios/Axios";
 import { useParams } from "react-router-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const PlayerProfile = () => {
   const [profilePhoto, setProfilePhoto] = useState<File>();
   const [birthCertificate, setBirthCertificate] = useState<File>();
   const [aadharCard, setAadharCard] = useState<File>();
+  const [open, setOpen] = useState(false);
 
   const { id } = useParams();
-  const fetchTeamsQuery = useQuery({
+
+  const {
+    data: teamData,
+    isPending: loadingTeams,
+    error: errorLoadingTeams,
+  } = useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
       try {
@@ -86,6 +106,9 @@ const PlayerProfile = () => {
       firstName: data?.firstName || "",
       middleName: data?.middleName || "",
       lastName: data?.lastName || "",
+      playingSkill: data?.playingSkill || "",
+      gender: data?.gender || "",
+      teamName: data?.teamName || "",
       email: data?.email || "",
       phoneNo: data?.phoneNo || "",
       birthDate: data?.birthDate || date,
@@ -240,7 +263,6 @@ const PlayerProfile = () => {
                 )}
               />
             </div>
-
             {/* Email */}
             <FormField
               control={form.control}
@@ -255,7 +277,6 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
             {/* Phone Number */}
             <FormField
               control={form.control}
@@ -270,7 +291,6 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
             {/* Birth Date */}
             <FormField
               control={form.control}
@@ -297,7 +317,6 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
             {/* Gender */}
             <FormField
               control={form.control}
@@ -306,7 +325,10 @@ const PlayerProfile = () => {
                 <FormItem>
                   <FormLabel>Select your Gender*</FormLabel>
 
-                  <Select onValueChange={field.onChange} value={data?.gender}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
                         <SelectValue placeholder="Select Gender" />
@@ -323,50 +345,76 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
             {/* Team Name */}
+
             <FormField
               control={form.control}
               name="teamName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col ">
                   <FormLabel>Select Your Team*</FormLabel>
-                  <Select
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    value={data?.teamName}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="choose team" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormMessage />
-                    <SelectContent>
-                      {fetchTeamsQuery.isPending ? (
-                        <p>loading...</p>
-                      ) : fetchTeamsQuery.error ? (
-                        <p>error while loading data </p>
-                      ) : (
-                        fetchTeamsQuery.data.data.map(
-                          (item: z.infer<typeof teamRegistrationSchema>) => {
-                            return (
-                              <SelectItem
-                                value={item.teamName}
-                                key={item.email}
-                              >
-                                {item.teamName}
-                              </SelectItem>
-                            );
-                          }
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className=" justify-between min-w-[300px] w-fit"
+                      >
+                        {field?.value
+                          ? teamData?.data?.find(
+                              (team: { teamName: string }) =>
+                                team.teamName?.toString() === field?.value
+                            )?.teamName
+                          : "Select Team"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Select Team" />
+                        {loadingTeams ? (
+                          <div className="flex justify-center p-4">
+                            <p>Loading teams</p>
+                          </div>
+                        ) : errorLoadingTeams ? (
+                          <div className="flex justify-center p-4 text-red-500">
+                            Error loading teams
+                          </div>
+                        ) : (
+                          <CommandList>
+                            <CommandEmpty>No team found.</CommandEmpty>
+                            <CommandGroup>
+                              {teamData?.data?.map(
+                                (team: { _id: number; teamName: string }) => (
+                                  <CommandItem
+                                    key={team._id}
+                                    value={team.teamName}
+                                    onSelect={(currentValue) => {
+                                      field.onChange(currentValue);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        field.value === team.teamName
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      }`}
+                                    />
+                                    {team.teamName}
+                                  </CommandItem>
+                                )
+                              )}
+                            </CommandGroup>
+                          </CommandList>
+                        )}
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormItem>
               )}
             />
-
             {/* Playing Skill */}
             <FormField
               control={form.control}
@@ -377,7 +425,6 @@ const PlayerProfile = () => {
                   <Select
                     defaultValue={field?.value}
                     onValueChange={field.onChange}
-                    value={data?.playingSkill}
                   >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
@@ -410,7 +457,6 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
             <Button
               type="submit"
               className="w-full mt-4"

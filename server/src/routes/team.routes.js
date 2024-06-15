@@ -3,10 +3,8 @@ import {
   LoginTeam,
   getAllTeams,
   getTeam,
-
+  getTeamByPin,
   getZone,
-
-
   registerTeam,
   updateLogo,
   updateTeamDetails,
@@ -22,11 +20,10 @@ router
 
 router.route("/get-teams").get(getAllTeams);
 
-router.route("/teaminfo").post(getTeam);
+router.route("/teaminfo").post(getTeamByPin);
 router.route("/zone/:id").get(getZone);
 
 router.route("/get-team/:id").get(getTeam);
-
 
 router.route("/login").post(LoginTeam);
 
