@@ -3,6 +3,7 @@ import {
   LoginTeam,
   getAllTeams,
   getTeam,
+  getZone,
   registerTeam,
 } from "../controllers/team.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -16,6 +17,7 @@ router
 
 router.route("/get-teams").get(getAllTeams);
 router.route("/teaminfo").post(getTeam);
+router.route("/zone/:id").get(getZone);
 
 router.route("/login").post(LoginTeam);
 

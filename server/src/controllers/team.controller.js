@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Team } from "../models/team.model.js";
+import { Team, Zone } from "../models/team.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import LoginUtil from "../utils/LoginUtil.js";
 import { uploadFileToS3 } from "../utils/s3Operations.js";
@@ -98,12 +98,44 @@ const getTeam = asyncHandler(async (req, res, next) => {
   if (!team) {
     return next(new ApiError(404, "No such user found"));
   }
+  const pin = Number(team?.pinCode);
+
+  // console.log(pin);
+  const zone = await Zone.findOne({ pincodes: pin }, { name: 1 });
+  if (!zone) {
+    return next(new ApiError(404, "No Zone Matched"));
+  }
+
+  // console.log(final);
   return res.status(200).json({
     success: true,
-    team,
+    team: {
+      ...team?._doc,
+      zone: zone?.name,
+    },
   });
 });
 
+const getZone = asyncHandler(async (req, res, next) => {
+  if (!req.param) {
+    return next(new ApiError(401, "No parameters specified"));
+  }
+
+  console.log(req.params);
+  const pin = req.params.id;
+  const zone = await Zone.findOne(
+    { pincodes: { $elemMatch: { pin } } },
+    { name: 1 }
+  );
+
+  if (!zone) {
+    return next(new ApiError(404, "No Zone Found"));
+  }
+  res.status(200).json({
+    success: true,
+    zone,
+  });
+});
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -134,4 +166,4 @@ const getTeam = asyncHandler(async (req, res, next) => {
 
 const LoginTeam = LoginUtil(Team);
 
-export { registerTeam, getAllTeams, LoginTeam, getTeam };
+export { registerTeam, getAllTeams, LoginTeam, getTeam, getZone };

@@ -105,4 +105,11 @@ teamSchema.methods.generateRefreshToken = function () {
   );
 };
 
+const ZoneSchema = new mongoose.Schema({
+  name: String,
+  pincodes: [Number],
+});
+
+export const Zone = mongoose.model("zone", ZoneSchema);
+
 export const Team = mongoose.model("Team", teamSchema);
