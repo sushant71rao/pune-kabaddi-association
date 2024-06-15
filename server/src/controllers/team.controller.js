@@ -89,6 +89,54 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teams, "successfully received all teams"));
 });
 
+const getTeam = asyncHandler(async (req, res) => {
+  const teamId = req.params.id;
+  const team = await Team.findById(teamId);
+
+  if (!team) {
+    throw new ApiError(404, "team not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, team, "fetched team"));
+});
+
+const updateTeamDetails = asyncHandler(async (req, res) => {
+  const { _id, ...rest } = req.body;
+
+  const team = await Team.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        ...rest,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, team, "Account details updated successfully"));
+});
+
+const updateLogo = asyncHandler(async (req, res, next) => {
+  const logoLocalPath = req.files?.logo?.[0];
+
+  if (logoLocalPath) {
+    let logo = await uploadFileToS3(logoLocalPath);
+
+    await Team?.findByIdAndUpdate(req?.params?.id, {
+      $set: {
+        logo: logo,
+      },
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Files Updated Successfully",
+  });
+});
+
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -119,4 +167,11 @@ const getAllTeams = asyncHandler(async (req, res) => {
 
 const LoginTeam = LoginUtil(Team);
 
-export { registerTeam, getAllTeams, LoginTeam };
+export {
+  registerTeam,
+  getAllTeams,
+  getTeam,
+  LoginTeam,
+  updateLogo,
+  updateTeamDetails,
+};

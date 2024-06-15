@@ -33,9 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
 import { cn } from "@/lib/utils";
@@ -47,20 +44,20 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  teamRegistrationSchema,
-  TeamType,
-} from "@/schemas/teamRegistrationSchema";
+import { teamProfileSchema, TeamType } from "@/schemas/teamProfileSchema";
 
 import { useToast } from "@/components/ui/use-toast";
 import Axios from "@/Axios/Axios";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import DocumentDownload from "./DocumentDownload";
+import DocumentView from "@/components/DocumentView";
 
-const formSchema = teamRegistrationSchema;
+const formSchema = teamProfileSchema;
 
 const TeamProfile = () => {
+  const [logo, setLogo] = useState<File>();
   const { id } = useParams();
 
   const fetchTeamQuery = useQuery<TeamType | undefined>({
@@ -68,7 +65,7 @@ const TeamProfile = () => {
     queryFn: async () => {
       try {
         const response = await Axios.get(`/api/v1/teams/get-team/${id}`);
-        // console.log(response.data.data);
+
         return response.data.data as TeamType;
       } catch (error) {
         console.log("error while fetching teams", error);
@@ -83,21 +80,27 @@ const TeamProfile = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      teamName: "",
-      email: "",
-      phoneNo: "",
-      address: "",
-      category: "",
-      ageGroup: [],
-      pinCode: "",
-      authorizedPersonName: "",
-      authorizedPersonPhoneNo: "",
-      managerName: "",
-      managerPhoneNo: "",
-      password: "",
-      description: "",
+      teamName: data?.teamName || "",
+      email: data?.email || "",
+      phoneNo: data?.phoneNo || "",
+      address: data?.address || "",
+      startingYear: data?.startingYear || "",
+      category: data?.category || "",
+      ageGroup: data?.ageGroup || [],
+      pinCode: data?.pinCode || "",
+      authorizedPersonName: data?.authorizedPersonName || "",
+      authorizedPersonPhoneNo: data?.authorizedPersonPhoneNo || "",
+      managerName: data?.managerName || "",
+      managerPhoneNo: data?.managerPhoneNo || "",
+      description: data?.description || "",
     },
   });
+
+  useEffect(() => {
+    if (fetchTeamQuery.isSuccess) {
+      form.reset(data);
+    }
+  }, [fetchTeamQuery.isSuccess, data, form]);
 
   const items = [
     {
@@ -122,58 +125,65 @@ const TeamProfile = () => {
     411002, 410038, 411000, 412206, 412212, 412108, 413106, 413102, 413133,
     412301,
   ];
+
+  const years: number[] = [];
+  for (let year = 1950; year <= 2025; year++) {
+    years.push(year);
+  }
+
   form.watch();
 
   const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
-    // console.log(teamData);
     {
-      const formData = new FormData();
-      for (const key in teamData) {
-        if (key === "logo") {
-          const logoFile = (teamData[key] as FileList)[0];
-          // console.log(logoFile);
-          formData.append(key, logoFile);
-        } else {
-          // Use keyof to ensure that key is a valid property of teamData
-          const validKey = key as keyof typeof teamData;
+      console.log(teamData);
+      let formData = form.getValues();
+      console.log("team form data", formData);
 
-          const value = teamData[validKey];
-
-          if (validKey === "startingYear" && value instanceof Date) {
-            formData.append(validKey, value.toISOString());
-          } else if (typeof value === "string" || typeof value === "number") {
-            formData.append(validKey, value.toString());
-          } else if (typeof value === typeof []) {
-            formData.append(validKey, JSON.stringify(value));
-          } else {
-            console.warn(`Unsupported type for field '${validKey}'`);
-          }
-        }
-      }
-
-      // console.log(formData);
       try {
-        const response = await Axios.post(
-          "/api/v1/teams/register-team",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        const response = await Axios.patch(
+          `/api/v1/teams/update-team-details/${id}`,
+          { ...formData }
         );
 
         return response.data;
       } catch (error) {
         console.log(error);
         if (axios.isAxiosError(error) && error.response?.status === 409) {
-          throw new Error("Team Name or Email already exists");
+          throw new Error("failed to update team details");
         } else {
           throw new Error("Team registration failed. Please try again");
         }
       }
     }
   };
+
+  const FileUpdate = useMutation({
+    mutationKey: ["logoUpdate"],
+    mutationFn: async (files: any) => {
+      try {
+        let response = await Axios.patch(
+          `/api/v1/teams/update-logo/${id}`,
+          files,
+          {
+            // withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    onSuccess: () => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Document Updated Successfully",
+      });
+    },
+  });
 
   const registerTeamMutation = useMutation({
     mutationKey: ["registerTeam"],
@@ -189,12 +199,14 @@ const TeamProfile = () => {
       toast({
         variant: "default",
         title: "Success",
-        description: "Team Registered Successfully",
+        description: "Team Updated Successfully",
       });
     },
   });
   const [open, setOpen] = useState(false);
-  const fileRef = form.register("logo", { required: true });
+  const [yearOpen, setYearOpen] = useState(false);
+
+  // const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
     registerTeamMutation.mutate(teamData);
@@ -259,61 +271,58 @@ const TeamProfile = () => {
               )}
             />
 
-            {/* Logo */}
-            <FormField
-              control={form.control}
-              name="logo"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Team Logo</FormLabel>
-                  <FormControl>
-                    <Input type="file" {...fileRef} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Started On */}
             <FormField
               control={form.control}
               name="startingYear"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Starting Date*</FormLabel>
-                  <Popover>
+                  <FormLabel>Starting Year*</FormLabel>
+                  <Popover open={yearOpen} onOpenChange={setYearOpen}>
                     <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>pick starting date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[200px] justify-between"
+                      >
+                        {field?.value
+                          ? years.find(
+                              (year) => year?.toString() === field?.value
+                            )
+                          : "Select Starting Year"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        captionLayout="dropdown-buttons"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          // setDate(date);
-                          // calculateAge(date);
-                          field.onChange(date);
-                        }}
-                        fromYear={1960}
-                        toYear={2024}
-                      />
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Select PinCode" />
+                        <CommandList>
+                          <CommandEmpty>No year found.</CommandEmpty>
+                          <CommandGroup>
+                            {years.map((year) => (
+                              <CommandItem
+                                key={year?.toString()}
+                                value={year?.toString()}
+                                onSelect={(currentValue) => {
+                                  field.onChange(currentValue);
+                                  setYearOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === year?.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {year}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -468,30 +477,6 @@ const TeamProfile = () => {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  {/* <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Choose your pinCode" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormMessage />
-                    <SelectContent>
-                      <SelectGroup>
-                        {PinCodes?.map((ele) => {
-                          return (
-                            <>
-                              <SelectItem value={ele.toString()}>
-                                {ele}
-                              </SelectItem>
-                            </>
-                          );
-                        })}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select> */}
                 </FormItem>
               )}
             />
@@ -561,20 +546,6 @@ const TeamProfile = () => {
               />
             </div>
 
-            {/* Password */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Write your password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* Description */}
             <FormField
               control={form.control}
@@ -619,6 +590,38 @@ const TeamProfile = () => {
             </p>
           </form>
         </Form>
+        <div className="flex flex-col gap-3 ">
+          <div className="flex justify-between items-end">
+            <div className="flex gap-2 items-end">
+              <div>
+                <div className="text-sm font-medium">Logo</div>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    setLogo(e?.target?.files?.[0] || ({} as File));
+                  }}
+                ></Input>
+              </div>
+              <div className="flex gap-1">
+                <DocumentView
+                  imgUrl={logo ? URL.createObjectURL(logo) : data?.logo}
+                />
+                <DocumentDownload
+                  imgUrl={logo ? URL.createObjectURL(logo) : data?.logo}
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                const formData = new FormData();
+                formData.append("logo", logo!, logo?.name);
+                FileUpdate.mutate(formData);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

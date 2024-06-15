@@ -31,7 +31,7 @@ export const teamRegistrationSchema = z.object({
       "Only .jpg, .jpeg, .png and .webp formats are supported."
     ),
 
-  startingYear: z.date({ required_error: "Date is required" }),
+  startingYear: z.string()?.min(1, { message: "Please provide a value" }),
   category: z.string()?.min(1, { message: "Category is required." }),
   ageGroup: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one Age Group.",
@@ -62,4 +62,3 @@ export const teamRegistrationSchema = z.object({
   description: z.string(),
 });
 
-export type TeamType = z.infer<typeof teamRegistrationSchema>;

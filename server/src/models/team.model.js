@@ -15,12 +15,16 @@ const teamSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    address: {
+      type: String,
+      required: true,
+    },
     logo: {
       type: String, // Assuming you save the file path or URL
       required: true,
     },
     startingYear: {
-      type: Date,
+      type: String,
       required: true,
     },
     category: {

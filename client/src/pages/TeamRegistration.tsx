@@ -33,9 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
 import { cn } from "@/lib/utils";
@@ -101,6 +98,11 @@ const TeamRegistration = () => {
     411002, 410038, 411000, 412206, 412212, 412108, 413106, 413102, 413133,
     412301,
   ];
+
+  const years: number[] = [];
+  for (let year = 1950; year <= 2025; year++) {
+    years.push(year);
+  }
   form.watch();
 
   const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
@@ -118,9 +120,7 @@ const TeamRegistration = () => {
 
           const value = teamData[validKey];
 
-          if (validKey === "startingYear" && value instanceof Date) {
-            formData.append(validKey, value.toISOString());
-          } else if (typeof value === "string" || typeof value === "number") {
+          if (typeof value === "string" || typeof value === "number") {
             formData.append(validKey, value.toString());
           } else if (typeof value === typeof []) {
             formData.append(validKey, JSON.stringify(value));
@@ -173,6 +173,7 @@ const TeamRegistration = () => {
     },
   });
   const [open, setOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
   const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
@@ -260,39 +261,52 @@ const TeamRegistration = () => {
               name="startingYear"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Starting Date*</FormLabel>
-                  <Popover>
+                  <FormLabel>Starting Year*</FormLabel>
+                  <Popover open={yearOpen} onOpenChange={setYearOpen}>
                     <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>pick starting date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[200px] justify-between"
+                      >
+                        {field?.value
+                          ? years.find(
+                              (year) => year?.toString() === field?.value
+                            )
+                          : "Select Starting Year"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        captionLayout="dropdown-buttons"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          // setDate(date);
-                          // calculateAge(date);
-                          field.onChange(date);
-                        }}
-                        fromYear={1960}
-                        toYear={2024}
-                      />
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Select PinCode" />
+                        <CommandList>
+                          <CommandEmpty>No year found.</CommandEmpty>
+                          <CommandGroup>
+                            {years.map((year) => (
+                              <CommandItem
+                                key={year?.toString()}
+                                value={year?.toString()}
+                                onSelect={(currentValue) => {
+                                  field.onChange(currentValue);
+                                  setYearOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === year?.toString()
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {year}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />

@@ -90,9 +90,6 @@ const PlayerProfile = () => {
       phoneNo: data?.phoneNo || "",
       birthDate: data?.birthDate || date,
       adharNumber: data?.adharNumber || "",
-      // avatar: data?.avatar || "",
-      // adharCard: data?.adharCard || "",
-      // birthCertificate: data?.birthCertificate || "",
       password: "",
       achievements: [
         { achievementYear: "", achievementTitle: "", achievementDocument: "" },
@@ -114,6 +111,7 @@ const PlayerProfile = () => {
     {
       console.log(playerData);
       let formData = form.getValues();
+
       try {
         const response = await Axios.patch(
           `/api/v1/players/update-player-details/${id}`,
@@ -124,7 +122,7 @@ const PlayerProfile = () => {
         return response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 409) {
-          throw new Error("Player Email already exists");
+          throw new Error("Failed to update");
         } else {
           throw new Error("Player registration failed. Please try again.");
         }
@@ -412,70 +410,6 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-
-            {/* Avatar */}
-            {/* <div className="flex w-full items-end gap-4 flex-wrap">
-              <FormField
-                control={form.control}
-                name="avatar"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Profile Photo*</FormLabel>
-                    <FormControl>
-                      <Input id="avatar" type="file" {...avatarFileRef} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DocumentView imgUrl={data?.avatar} />
-              <DocumentDownload imgUrl={data?.avatar} />
-            </div> */}
-
-            {/* Adhar Card */}
-            {/* <div className="flex gap-4 flex-wrap items-end">
-              <FormField
-                control={form.control}
-                name="adharCard"
-                render={() => (
-                  <FormItem className="w-fit">
-                    <FormLabel>Adhar Card</FormLabel>
-                    <FormControl>
-                      <Input id="picture" type="file" {...adharCardFileRef} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DocumentView imgUrl={data?.adharCard} />
-              <DocumentDownload imgUrl={data?.adharCard} />
-            </div> */}
-
-            {/* Birth Certificate */}
-            {/* <div className="flex gap-4 flex-wrap items-end">
-              <FormField
-                control={form.control}
-                name="birthCertificate"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>
-                      Birth Certificate OR Bonafide Certificate*
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        id="picture"
-                        type="file"
-                        {...birthCertificateFileRef}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DocumentView imgUrl={data?.birthCertificate} />
-              <DocumentDownload imgUrl={data?.birthCertificate} />
-            </div> */}
 
             <Button
               type="submit"
