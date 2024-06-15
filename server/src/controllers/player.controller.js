@@ -247,7 +247,7 @@ const updateFiles = asyncHandler(async (req, res, next) => {
   if (avatarLocalPath) {
     let avatar = await uploadFileToS3(avatarLocalPath);
     // console.log(avatar);
-    let res = await Player?.findByIdAndUpdate(req?.params?.id, {
+    await Player?.findByIdAndUpdate(req?.params?.id, {
       $set: {
         avatar: avatar,
       },

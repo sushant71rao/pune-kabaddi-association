@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   Form,
@@ -44,36 +44,63 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
-import { teamRegistrationSchema } from "@/schemas/teamRegistrationSchema";
+import { teamProfileSchema, TeamType } from "@/schemas/teamProfileSchema";
 
 import { useToast } from "@/components/ui/use-toast";
 import Axios from "@/Axios/Axios";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import DocumentDownload from "./DocumentDownload";
+import DocumentView from "@/components/DocumentView";
 
-const formSchema = teamRegistrationSchema;
+const formSchema = teamProfileSchema;
 
-const TeamRegistration = () => {
+const TeamProfile = () => {
+  const [logo, setLogo] = useState<File>();
+  const { id } = useParams();
+
+  const fetchTeamQuery = useQuery<TeamType | undefined>({
+    queryKey: ["team"],
+    queryFn: async () => {
+      try {
+        const response = await Axios.get(`/api/v1/teams/get-team/${id}`);
+
+        return response.data.data as TeamType;
+      } catch (error) {
+        console.log("error while fetching teams", error);
+      }
+    },
+  });
+
+  let { data } = fetchTeamQuery;
+
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      teamName: "",
-      email: "",
-      phoneNo: "",
-      address: "",
-      category: "",
-      ageGroup: [],
-      pinCode: "",
-      authorizedPersonName: "",
-      authorizedPersonPhoneNo: "",
-      managerName: "",
-      managerPhoneNo: "",
-      password: "",
-      description: "",
+      teamName: data?.teamName || "",
+      email: data?.email || "",
+      phoneNo: data?.phoneNo || "",
+      address: data?.address || "",
+      startingYear: data?.startingYear || "",
+      category: data?.category || "",
+      ageGroup: data?.ageGroup || [],
+      pinCode: data?.pinCode || "",
+      authorizedPersonName: data?.authorizedPersonName || "",
+      authorizedPersonPhoneNo: data?.authorizedPersonPhoneNo || "",
+      managerName: data?.managerName || "",
+      managerPhoneNo: data?.managerPhoneNo || "",
+      description: data?.description || "",
     },
   });
+
+  useEffect(() => {
+    if (fetchTeamQuery.isSuccess) {
+      form.reset(data);
+    }
+  }, [fetchTeamQuery.isSuccess, data, form]);
 
   const items = [
     {
@@ -103,56 +130,60 @@ const TeamRegistration = () => {
   for (let year = 1950; year <= 2025; year++) {
     years.push(year);
   }
+
   form.watch();
 
   const registerTeam = async (teamData: z.infer<typeof formSchema>) => {
-    // console.log(teamData);
     {
-      const formData = new FormData();
-      for (const key in teamData) {
-        if (key === "logo") {
-          const logoFile = (teamData[key] as FileList)[0];
-          // console.log(logoFile);
-          formData.append(key, logoFile);
-        } else {
-          // Use keyof to ensure that key is a valid property of teamData
-          const validKey = key as keyof typeof teamData;
+      console.log(teamData);
+      let formData = form.getValues();
+      console.log("team form data", formData);
 
-          const value = teamData[validKey];
-
-          if (typeof value === "string" || typeof value === "number") {
-            formData.append(validKey, value.toString());
-          } else if (typeof value === typeof []) {
-            formData.append(validKey, JSON.stringify(value));
-          } else {
-            console.warn(`Unsupported type for field '${validKey}'`);
-          }
-        }
-      }
-
-      // console.log(formData);
       try {
-        const response = await Axios.post(
-          "/api/v1/teams/register-team",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        const response = await Axios.patch(
+          `/api/v1/teams/update-team-details/${id}`,
+          { ...formData }
         );
 
         return response.data;
       } catch (error) {
         console.log(error);
         if (axios.isAxiosError(error) && error.response?.status === 409) {
-          throw new Error("Team Name or Email already exists");
+          throw new Error("failed to update team details");
         } else {
           throw new Error("Team registration failed. Please try again");
         }
       }
     }
   };
+
+  const FileUpdate = useMutation({
+    mutationKey: ["logoUpdate"],
+    mutationFn: async (files: any) => {
+      try {
+        let response = await Axios.patch(
+          `/api/v1/teams/update-logo/${id}`,
+          files,
+          {
+            // withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    onSuccess: () => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Document Updated Successfully",
+      });
+    },
+  });
 
   const registerTeamMutation = useMutation({
     mutationKey: ["registerTeam"],
@@ -168,23 +199,24 @@ const TeamRegistration = () => {
       toast({
         variant: "default",
         title: "Success",
-        description: "Team Registered Successfully",
+        description: "Team Updated Successfully",
       });
     },
   });
   const [open, setOpen] = useState(false);
   const [yearOpen, setYearOpen] = useState(false);
-  const fileRef = form.register("logo", { required: true });
+
+  // const fileRef = form.register("logo", { required: true });
 
   const onSubmit = (teamData: z.infer<typeof formSchema>) => {
-    // console.log(teamData);
     registerTeamMutation.mutate(teamData);
   };
+
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
         <CardTitle className="text-3xl font-black text-slate-700">
-          Team Registration
+          Team Profile
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -234,22 +266,6 @@ const TeamRegistration = () => {
                   <FormControl>
                     <Input placeholder="Write your phone Number" {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Logo */}
-            <FormField
-              control={form.control}
-              name="logo"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Team Logo</FormLabel>
-                  <FormControl>
-                    <Input type="file" {...fileRef} />
-                  </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -530,20 +546,6 @@ const TeamRegistration = () => {
               />
             </div>
 
-            {/* Password */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Write your password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* Description */}
             <FormField
               control={form.control}
@@ -588,9 +590,41 @@ const TeamRegistration = () => {
             </p>
           </form>
         </Form>
+        <div className="flex flex-col gap-3 ">
+          <div className="flex justify-between items-end">
+            <div className="flex gap-2 items-end">
+              <div>
+                <div className="text-sm font-medium">Logo</div>
+                <Input
+                  type="file"
+                  onChange={(e) => {
+                    setLogo(e?.target?.files?.[0] || ({} as File));
+                  }}
+                ></Input>
+              </div>
+              <div className="flex gap-1">
+                <DocumentView
+                  imgUrl={logo ? URL.createObjectURL(logo) : data?.logo}
+                />
+                <DocumentDownload
+                  imgUrl={logo ? URL.createObjectURL(logo) : data?.logo}
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                const formData = new FormData();
+                formData.append("logo", logo!, logo?.name);
+                FileUpdate.mutate(formData);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default TeamRegistration;
+export default TeamProfile;

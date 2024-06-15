@@ -1,7 +1,11 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Team, Zone } from "../models/team.model.js";
+
+
+import { Zone } from "../models/team.model.js";
+
+import { Team } from "../models/team.model.js";
+
 import { asyncHandler } from "../utils/asyncHandler.js";
 import LoginUtil from "../utils/LoginUtil.js";
 import { uploadFileToS3 } from "../utils/s3Operations.js";
@@ -83,12 +87,13 @@ const registerTeam = asyncHandler(async (req, res) => {
 });
 
 const getAllTeams = asyncHandler(async (req, res) => {
-  const teams = await Team.find({}, { teamName: 1 });
+  const teams = await Team.find();
 
   return res
     .status(201)
     .json(new ApiResponse(200, teams, "successfully received all teams"));
 });
+
 
 const getTeam = asyncHandler(async (req, res, next) => {
   if (!req.body) {
@@ -136,6 +141,56 @@ const getZone = asyncHandler(async (req, res, next) => {
     zone,
   });
 });
+
+const getTeam = asyncHandler(async (req, res) => {
+  const teamId = req.params.id;
+  const team = await Team.findById(teamId);
+
+  if (!team) {
+    throw new ApiError(404, "team not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, team, "fetched team"));
+});
+
+const updateTeamDetails = asyncHandler(async (req, res) => {
+  const { _id, ...rest } = req.body;
+
+  const team = await Team.findByIdAndUpdate(
+    req.params?.id,
+    {
+      $set: {
+        ...rest,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, team, "Account details updated successfully"));
+});
+
+const updateLogo = asyncHandler(async (req, res, next) => {
+  const logoLocalPath = req.files?.logo?.[0];
+
+  if (logoLocalPath) {
+    let logo = await uploadFileToS3(logoLocalPath);
+
+    await Team?.findByIdAndUpdate(req?.params?.id, {
+      $set: {
+        logo: logo,
+      },
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Files Updated Successfully",
+  });
+});
+
+
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -166,4 +221,17 @@ const getZone = asyncHandler(async (req, res, next) => {
 
 const LoginTeam = LoginUtil(Team);
 
-export { registerTeam, getAllTeams, LoginTeam, getTeam, getZone };
+
+
+
+export {
+  registerTeam,
+  getAllTeams,
+  getTeam,
+  LoginTeam,
+  updateLogo,
+  updateTeamDetails,
+  getZone
+
+};
+
