@@ -3,6 +3,10 @@ import {
   LoginTeam,
   getAllTeams,
   getTeam,
+
+  getZone,
+
+
   registerTeam,
   updateLogo,
   updateTeamDetails,
@@ -17,7 +21,12 @@ router
   .post(upload.fields([{ name: "logo", maxCount: 1 }]), registerTeam);
 
 router.route("/get-teams").get(getAllTeams);
+
+router.route("/teaminfo").post(getTeam);
+router.route("/zone/:id").get(getZone);
+
 router.route("/get-team/:id").get(getTeam);
+
 
 router.route("/login").post(LoginTeam);
 

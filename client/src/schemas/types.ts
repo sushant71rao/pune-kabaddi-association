@@ -16,9 +16,14 @@ export type User = {
   adharCard: String;
 };
 export type Team = {
+  _id: String;
+  zone?: String;
   teamName: String;
   email: String;
   ageGroup: String;
   authorizedPersonName: String;
-  managerName: String;
+  managerName?: String;
+  address?: String;
+  pinCode?: String;
+  logo?: String;
 };

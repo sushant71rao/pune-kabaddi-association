@@ -1,6 +1,11 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
+
+import { Zone } from "../models/team.model.js";
+
 import { Team } from "../models/team.model.js";
+
 import { asyncHandler } from "../utils/asyncHandler.js";
 import LoginUtil from "../utils/LoginUtil.js";
 import { uploadFileToS3 } from "../utils/s3Operations.js";
@@ -89,6 +94,54 @@ const getAllTeams = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teams, "successfully received all teams"));
 });
 
+
+const getTeam = asyncHandler(async (req, res, next) => {
+  if (!req.body) {
+    return next(new ApiError(401, "No query provided in request"));
+  }
+  const team = await Team.findOne(req.body);
+  if (!team) {
+    return next(new ApiError(404, "No such user found"));
+  }
+  const pin = Number(team?.pinCode);
+
+  // console.log(pin);
+  const zone = await Zone.findOne({ pincodes: pin }, { name: 1 });
+  if (!zone) {
+    return next(new ApiError(404, "No Zone Matched"));
+  }
+
+  // console.log(final);
+  return res.status(200).json({
+    success: true,
+    team: {
+      ...team?._doc,
+      zone: zone?.name,
+    },
+  });
+});
+
+const getZone = asyncHandler(async (req, res, next) => {
+  if (!req.param) {
+    return next(new ApiError(401, "No parameters specified"));
+  }
+
+  console.log(req.params);
+  const pin = req.params.id;
+  const zone = await Zone.findOne(
+    { pincodes: { $elemMatch: { pin } } },
+    { name: 1 }
+  );
+
+  if (!zone) {
+    return next(new ApiError(404, "No Zone Found"));
+  }
+  res.status(200).json({
+    success: true,
+    zone,
+  });
+});
+
 const getTeam = asyncHandler(async (req, res) => {
   const teamId = req.params.id;
   const team = await Team.findById(teamId);
@@ -137,6 +190,7 @@ const updateLogo = asyncHandler(async (req, res, next) => {
   });
 });
 
+
 // const logoutTeam = asyncHandler(async (req, res) => {
 //   let team = await Team.findByIdAndUpdate(
 //     req.user._id,
@@ -167,6 +221,9 @@ const updateLogo = asyncHandler(async (req, res, next) => {
 
 const LoginTeam = LoginUtil(Team);
 
+
+
+
 export {
   registerTeam,
   getAllTeams,
@@ -174,4 +231,7 @@ export {
   LoginTeam,
   updateLogo,
   updateTeamDetails,
+  getZone
+
 };
+
