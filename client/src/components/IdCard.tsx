@@ -13,9 +13,8 @@ interface Prop {
 }
 
 const IdCard = (prop: Prop) => {
-  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
   // let { prop?.user } = useContext(AuthContext);
-  let [transated, setTranslated] = useState<{ teamname: string }>();
+  // let [transated, setTranslated] = useState<{ teamname: string }>();
 
   let getTeam = useQuery<Team>({
     queryKey: ["player-team"],
@@ -31,15 +30,18 @@ const IdCard = (prop: Prop) => {
       }
     },
   });
+  const { toPDF, targetRef } = usePDF({
+    filename: `${String(prop?.user?.firstName)}-id-card`,
+  });
 
-  useEffect(() => {
-    let translatefn = async () => {
-      setTranslated({
-        teamname: await translate(String(prop?.user?.teamName!), { to: "hi" }),
-      });
-    };
-    translatefn();
-  }, []);
+  // useEffect(() => {
+  //   let translatefn = async () => {
+  //     setTranslated({
+  //       teamname: await translate(String(prop?.user?.teamName!), { to: "hi" }),
+  //     });
+  //   };
+  //   translatefn();
+  // }, []);
 
   // console.log(transated);
   return (
@@ -130,7 +132,7 @@ const IdCard = (prop: Prop) => {
             <div className="flex overlay flex-col uppercase gap-3  bg-blue-100 p-4 border-[1px] items-center border-black w-full aspect h-[12rem]">
               <div>
                 <span className="heading">Team : </span>
-                <span className="">{transated?.teamname}</span>
+                <span className="">{getTeam?.data?.teamName}</span>
               </div>
               <div>
                 <span className="heading ">Zone : </span>
