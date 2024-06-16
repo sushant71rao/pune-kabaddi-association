@@ -1,20 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import translate from "translate";
 import QRCode from "react-qr-code";
 import { Team, User } from "@/schemas/types";
 import { Button } from "./ui/button";
-import { usePDF } from "react-to-pdf";
 import { useQuery } from "@tanstack/react-query";
 import Axios from "@/Axios/Axios";
+import { useReactToPrint } from "react-to-print";
 
 interface Prop {
   user: User;
 }
 
 const IdCard = (prop: Prop) => {
-  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
-  // let { prop?.user } = useContext(AuthContext);
+  const componentRef = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current!,
+  });
+
   let [transated, setTranslated] = useState<{ teamname: string }>();
 
   let getTeam = useQuery<Team>({
@@ -47,7 +50,7 @@ const IdCard = (prop: Prop) => {
       <div className="text-2xl font-semibold underline tracking-wide">
         ID CARD
       </div>
-      <div ref={targetRef}>
+      <div ref={componentRef}>
         <div className=" flex flex-wrap justify-center items-center">
           <div className="flex flex-col w-[27rem]  aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
@@ -55,9 +58,9 @@ const IdCard = (prop: Prop) => {
               <div className="text-lg font-[600] tracking-wide">
                 Pune District Kabbadi Association
               </div>
-              <div className="mix-blend-darken">
+              <div className="">
                 <img
-                  src={getTeam?.data?.logo?.toString() || ""}
+                  src={`${getTeam?.data?.logo?.toString()}`}
                   alt="logo"
                   width={44}
                 ></img>
@@ -148,7 +151,7 @@ const IdCard = (prop: Prop) => {
           </div>
         </div>
       </div>
-      <Button onClick={() => toPDF()}>Download</Button>
+      <Button onClick={() => handlePrint()}>Download</Button>
     </div>
   );
 };
