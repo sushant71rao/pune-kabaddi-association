@@ -51,7 +51,7 @@ const IdCard = (prop: Prop) => {
         ID CARD
       </div>
       <div ref={componentRef}>
-        <div className=" flex flex-wrap justify-center items-center">
+        <div className=" flex flex-col justify-center items-center">
           <div className="flex flex-col w-[27rem]  aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
               <img src="/assets/logo.png" width={57}></img>
