@@ -75,6 +75,7 @@
   }
   .overlay {
     background: url("../public/assets/watermark.png") no-repeat;
+    background-size: 170px;
     background-position: 50% 0%;
   }
 }
