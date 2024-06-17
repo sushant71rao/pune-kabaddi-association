@@ -170,6 +170,21 @@ const getPlayer = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, player, "fetched player"));
 });
 
+const deletePlayer = asyncHandler(async (req, res) => {
+  const playerId = req.params.id;
+  const player = await Player.findById(playerId);
+
+  if (!player) {
+    throw new ApiError(404, "player not found");
+  }
+
+  await Player.deleteOne({ _id: playerId });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Player deleted successfully"));
+});
+
 const getCurrentPlayer = asyncHandler(async (req, res) => {
   return res
     .status(200)
@@ -178,9 +193,6 @@ const getCurrentPlayer = asyncHandler(async (req, res) => {
 
 const updatePlayerDetails = asyncHandler(async (req, res) => {
   const { _id, ...rest } = req.body;
-  // if (!firstName || !email) {
-  //   throw new ApiError(400, "All fields are required");
-  // }
 
   const player = await Player.findByIdAndUpdate(
     req.params?.id,
@@ -330,6 +342,7 @@ export {
   getAllPlayers,
   LoginPlayer,
   getPlayer,
+  deletePlayer,
   updatePlayerDetails,
   updateFiles,
   loginPlayer,

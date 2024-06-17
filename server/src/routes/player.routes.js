@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deletePlayer,
   getAllPlayers,
   getCurrentPlayer,
   getPlayer,
@@ -39,6 +40,7 @@ router.route("/update-files/:id").patch(
 router.route("/login").post(LoginPlayer);
 router.route("/get-players").get(getAllPlayers);
 router.route("/get-player/:id").get(getPlayer);
+router.route("/delete-player/:id").delete(deletePlayer);
 router.route("/update-player-details/:id").patch(updatePlayerDetails);
 
 //secured routes
