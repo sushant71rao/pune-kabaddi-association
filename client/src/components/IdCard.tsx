@@ -1,5 +1,4 @@
 import { useRef } from "react";
-
 import QRCode from "react-qr-code";
 import { Team, User } from "@/schemas/types";
 import { Button } from "./ui/button";
@@ -41,9 +40,9 @@ const IdCard = (prop: Prop) => {
         <div className=" flex flex-col justify-center items-center">
           <div className="flex flex-col w-[27rem]  aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
-              <img src="/assets/logo.png" width={57}></img>
+              <img src="/assets/blue-logo.png" width={57}></img>
               <div className="text-lg font-[600] tracking-wide">
-                Pune District Kabbadi Association
+                Pune District kadaddi Association
               </div>
               <div className="">
                 <img
@@ -105,7 +104,7 @@ const IdCard = (prop: Prop) => {
           </div>
           <div className="flex rotate-180 flex-col w-[27rem] aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
-              <img src="/assets/logo.png" width={57}></img>
+              <img src="/assets/blue-logo.png" width={57}></img>
               <div className="text-lg font-[600] tracking-wide">
                 पुणे जिल्हा कबड्डी असोसिएशन
               </div>

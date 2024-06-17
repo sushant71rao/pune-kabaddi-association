@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,6 +40,29 @@ export function TeamDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [ageGroupFilter, setAgeGroupFilter] = useState("");
+  const [teamFilter, setTeamFilter] = useState("");
+
+  useEffect(() => {
+    const storedageGroupFilter = localStorage.getItem("ageGroupFilter");
+    const storedTeamFilter = localStorage.getItem("teamFilter");
+
+    if (storedageGroupFilter) {
+      setAgeGroupFilter(storedageGroupFilter);
+      table.getColumn("email")?.setFilterValue(storedageGroupFilter);
+    }
+
+    if (storedTeamFilter) {
+      setTeamFilter(storedTeamFilter);
+      table.getColumn("teamName")?.setFilterValue(storedTeamFilter);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("ageGroupFilter", ageGroupFilter);
+    localStorage.setItem("teamFilter", teamFilter);
+  }, [ageGroupFilter, teamFilter]);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -79,6 +102,7 @@ export function TeamDataTable<TData, TValue>({
             (table.getColumn("teamName")?.getFilterValue() as string) || ""
           }
           onChange={(e) => {
+            setTeamFilter(e.target.value);
             table.getColumn("teamName")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm mr-4"
@@ -89,6 +113,7 @@ export function TeamDataTable<TData, TValue>({
             (table.getColumn("ageGroup")?.getFilterValue() as string) || ""
           }
           onChange={(e) => {
+            setAgeGroupFilter(e.target.value);
             table.getColumn("ageGroup")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm "
