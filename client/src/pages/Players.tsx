@@ -1,6 +1,6 @@
 import Axios from "@/Axios/Axios";
-import { columns } from "@/components/admin/players/columns";
-import PeopleDataTable from "@/components/admin/players/data-table";
+import { columns } from "@/components/admin/Players/columns";
+import PeopleDataTable from "@/components/admin/Players/data-table";
 
 import { useQuery } from "@tanstack/react-query";
 
