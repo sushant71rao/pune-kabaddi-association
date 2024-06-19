@@ -1,12 +1,12 @@
 import Axios from "@/Axios/Axios";
-import { columns } from "@/components/admin/Players/columns";
-import PeopleDataTable from "@/components/admin/Players/data-table";
+import { columns } from "@/components/admin/players/columns";
+import PeopleDataTable from "@/components/admin/players/data-table";
 
 import { useQuery } from "@tanstack/react-query";
 
 const Players = () => {
   const fetchPlayerQuery = useQuery({
-    queryKey: ["Players"],
+    queryKey: ["players"],
     queryFn: async () => {
       const response = await Axios.get("api/v1/players/get-players");
       return response?.data;

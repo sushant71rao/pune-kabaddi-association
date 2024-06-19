@@ -37,6 +37,7 @@ router.route("/update-files/:id").patch(
   ]),
   updateFiles
 );
+
 router.route("/login").post(LoginPlayer);
 router.route("/get-players").get(getAllPlayers);
 router.route("/get-player/:id").get(getPlayer);
