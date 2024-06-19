@@ -37,15 +37,16 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { officialRegistrationSchema } from "@/schemas/officialRegistrationSchema";
 import { useState } from "react";
+
+const formSchema = officialRegistrationSchema;
 
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import Axios from "@/Axios/Axios";
-import { officialRegistrationSchema } from "@/schemas/officialRegistrationSchema";
 
-const formSchema = officialRegistrationSchema;
 const OfficialRegistration = () => {
   const [date, setDate] = useState<Date | undefined>();
 
