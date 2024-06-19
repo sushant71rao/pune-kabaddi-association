@@ -27,7 +27,7 @@ router.route("/update-files/:id").patch(
   upload.fields([
     { name: "avatar", maxCount: 1 },
     { name: "aadharCard", maxCount: 1 },
-    { name: "birthCertificate", maxCount: 1 },
+    { name: "passingCertificate", maxCount: 1 },
   ]),
   updateFiles
 );

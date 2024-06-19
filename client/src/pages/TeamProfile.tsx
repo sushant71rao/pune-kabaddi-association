@@ -61,7 +61,7 @@ const TeamProfile = () => {
   const { id } = useParams();
 
   const fetchTeamQuery = useQuery<TeamType | undefined>({
-    queryKey: ["team"],
+    queryKey: ["team", id],
     queryFn: async () => {
       try {
         const response = await Axios.get(`/api/v1/teams/get-team/${id}`);

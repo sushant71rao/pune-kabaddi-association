@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import DeleteRecord from "@/lib/delete-player";
+import DeleteRecord from "@/lib/delete-official";
 
 type Player = {
   _id: string;
