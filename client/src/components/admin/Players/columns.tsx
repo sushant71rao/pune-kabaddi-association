@@ -51,10 +51,7 @@ export const columns: ColumnDef<Player>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    header: "ID",
-    accessorKey: "_id",
-  },
+
   {
     header: "ID-CARD",
     accessorKey: "idCard",
@@ -157,5 +154,9 @@ export const columns: ColumnDef<Player>[] = [
         </DropdownMenu>
       );
     },
+  },
+  {
+    header: "ID",
+    accessorKey: "_id",
   },
 ];

@@ -130,6 +130,7 @@ const PlayerProfile = () => {
   form.watch();
 
   const registerPlayer = async (playerData: z.infer<typeof formSchema>) => {
+    console.log(playerData);
     {
       let formData = form.getValues();
 

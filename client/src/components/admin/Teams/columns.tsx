@@ -49,10 +49,6 @@ export const columns: ColumnDef<Player>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    header: "ID",
-    accessorKey: "_id",
-  },
 
   {
     header: "Email",
@@ -125,5 +121,9 @@ export const columns: ColumnDef<Player>[] = [
         </DropdownMenu>
       );
     },
+  },
+  {
+    header: "ID",
+    accessorKey: "_id",
   },
 ];

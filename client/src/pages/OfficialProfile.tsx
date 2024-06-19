@@ -9,11 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import {
   Select,
   SelectContent,
@@ -23,12 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 
-import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod";
@@ -101,6 +93,7 @@ const OfficialProfile = () => {
   const { toast } = useToast();
 
   const registerOfficial = async (officialData: z.infer<typeof formSchema>) => {
+    console.log(officialData);
     {
       const formData = form.getValues();
 
@@ -173,10 +166,6 @@ const OfficialProfile = () => {
     // console.log(officialData);
     registerOfficialMutation.mutate(officialData);
   };
-
-  const avatarFileRef = form.register("avatar", { required: true });
-  const adharCardFileRef = form.register("adharCard", { required: true });
-  const passingCertificateFileRef = form.register("passingCertificate");
 
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
