@@ -52,7 +52,7 @@ const registerTeam = asyncHandler(async (req, res) => {
   const logo = await uploadFileToS3(logoLocalPath);
 
   if (!logo) {
-    throw new ApiError(400, "Logo not uploaded on cloudinary");
+    throw new ApiError(400, "Logo not uploaded on S3");
   }
   let pAgeGroup = JSON.parse(ageGroup);
   // console.log(pAgeGroup);
