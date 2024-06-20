@@ -8,7 +8,7 @@ export type User = {
   phoneNo: String;
   avatar: String;
   teamName?: String;
-  playingSkill: String;
+  playingSkill: String | [String];
   gender: String;
   adharNumber: String;
   birthDate: Date;

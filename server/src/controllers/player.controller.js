@@ -166,7 +166,10 @@ const getPlayer = asyncHandler(async (req, res) => {
   if (!player) {
     throw new ApiError(404, "player not found");
   }
-
+  console.log(player);
+  if (player?.playingSkill && typeof player?.playingSkill != typeof "") {
+    player.playingSkill = player.playingSkill[0];
+  }
   return res.status(200).json(new ApiResponse(200, player, "fetched player"));
 });
 
