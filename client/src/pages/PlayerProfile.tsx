@@ -85,7 +85,7 @@ const PlayerProfile = () => {
     queryFn: async () => {
       try {
         const response = await Axios.get(`/api/v1/players/get-player/${id}`);
-        // console.log(response.data.data);
+        console.log(response.data.data);
         return response.data.data as PlayerType;
       } catch (error) {
         console.log("error while fetching teams", error);
@@ -105,7 +105,7 @@ const PlayerProfile = () => {
       firstName: data?.firstName || "",
       middleName: data?.middleName || "",
       lastName: data?.lastName || "",
-      playingSkill: data?.playingSkill || "",
+      playingSkill: data?.playingSkill || data?.playingSkill?.[0] || "",
       gender: data?.gender || "",
       teamName: data?.teamName || "",
       email: data?.email || "",
@@ -200,11 +200,6 @@ const PlayerProfile = () => {
       });
     },
   });
-
-  // const avatarFileRef = form.register("avatar", { required: true });
-  // const adharCardFileRef = form.register("adharCard", { required: true });
-  // const birthCertificateFileRef = form.register("birthCertificate");
-
   const onSubmit = (playerData: z.infer<typeof formSchema>) => {
     console.log(playerData);
     registerPlayerMutation.mutate(playerData);
@@ -214,7 +209,7 @@ const PlayerProfile = () => {
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
         <CardTitle className="text-3xl font-black text-slate-700">
-          Player Registration
+          Update Details
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -322,19 +317,20 @@ const PlayerProfile = () => {
               name="gender"
               render={({ field }) => (
                 <FormItem>
+                  {/* {console.log(field.value)} */}
                   <FormLabel>Select your Gender*</FormLabel>
 
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select Gender" />
+                        <SelectValue
+                          placeholder="Select Gender"
+                          defaultValue={field?.value}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
-                    <SelectContent>
+                    <SelectContent defaultValue={field?.value}>
                       <SelectGroup>
                         <SelectItem value="m">Male</SelectItem>
                         <SelectItem value="f">Female</SelectItem>
@@ -420,14 +416,15 @@ const PlayerProfile = () => {
               name="playingSkill"
               render={({ field }) => (
                 <FormItem>
+                  {/* {console.log(field?.value)} */}
                   <FormLabel>Playing Skill*</FormLabel>
-                  <Select
-                    defaultValue={field?.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field?.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue placeholder="Select Position" />
+                        <SelectValue
+                          placeholder="Select Position"
+                          defaultValue={field?.value}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
