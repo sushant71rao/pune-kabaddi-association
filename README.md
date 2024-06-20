@@ -8,3 +8,5 @@ It includes: Error handling, File uploading (multer, cloudinary), handling api r
 --> Award necessary ? how to display
 
 pm2 start npm --name kabadi-association -- start
+
+62.72.30.207

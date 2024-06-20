@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import DeleteRecord from "@/lib/delete-player";
 
 type Player = {
   _id: string;
@@ -129,8 +131,7 @@ export const columns: ColumnDef<Player>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const id = row.getValue("_id");
-      const person = row.original;
+      const id = String(row.getValue("_id"));
 
       const navigate = useNavigate();
       return (
@@ -147,14 +148,10 @@ export const columns: ColumnDef<Player>[] = [
                 navigate(`/admin/player/${id}`);
               }}
             >
-              Edit
+              <Button className="w-full">Edit</Button>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                navigator.clipboard.writeText(person.email.toString());
-              }}
-            >
-              Copy person name
+            <DropdownMenuItem>
+              <DeleteRecord id={id} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

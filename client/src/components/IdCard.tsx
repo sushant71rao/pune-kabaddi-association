@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-
-import translate from "translate";
+import { useRef } from "react";
 import QRCode from "react-qr-code";
 import { Team, User } from "@/schemas/types";
 import { Button } from "./ui/button";
@@ -18,8 +16,6 @@ const IdCard = (prop: Prop) => {
     content: () => componentRef.current!,
   });
 
-  let [transated, setTranslated] = useState<{ teamname: string }>();
-
   let getTeam = useQuery<Team>({
     queryKey: ["player-team"],
     queryFn: async () => {
@@ -35,16 +31,6 @@ const IdCard = (prop: Prop) => {
     },
   });
 
-  useEffect(() => {
-    let translatefn = async () => {
-      setTranslated({
-        teamname: await translate(String(prop?.user?.teamName!), { to: "hi" }),
-      });
-    };
-    translatefn();
-  }, []);
-
-  // console.log(transated);
   return (
     <div className="m-6 ">
       <div className="text-2xl font-semibold underline tracking-wide">
@@ -54,9 +40,9 @@ const IdCard = (prop: Prop) => {
         <div className=" flex flex-col justify-center items-center">
           <div className="flex flex-col w-[27rem]  aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
-              <img src="/assets/logo.png" width={57}></img>
+              <img src="/assets/blue-logo.png" width={57}></img>
               <div className="text-lg font-[600] tracking-wide">
-                Pune District Kabbadi Association
+                Pune District kadaddi Association
               </div>
               <div className="">
                 <img
@@ -118,7 +104,7 @@ const IdCard = (prop: Prop) => {
           </div>
           <div className="flex rotate-180 flex-col w-[27rem] aspect-video">
             <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
-              <img src="/assets/logo.png" width={57}></img>
+              <img src="/assets/blue-logo.png" width={57}></img>
               <div className="text-lg font-[600] tracking-wide">
                 पुणे जिल्हा कबड्डी असोसिएशन
               </div>
@@ -133,7 +119,7 @@ const IdCard = (prop: Prop) => {
             <div className="flex overlay flex-col uppercase gap-3  bg-blue-100 p-4 border-[1px] items-center border-black w-full aspect h-[12rem]">
               <div>
                 <span className="heading">Team : </span>
-                <span className="">{transated?.teamname}</span>
+                <span className="">{getTeam?.data?.teamName}</span>
               </div>
               <div>
                 <span className="heading ">Zone : </span>
@@ -151,7 +137,7 @@ const IdCard = (prop: Prop) => {
           </div>
         </div>
       </div>
-      <Button onClick={() => handlePrint()}>Download</Button>
+      <Button onClick={() => handlePrint()}>Print</Button>
     </div>
   );
 };

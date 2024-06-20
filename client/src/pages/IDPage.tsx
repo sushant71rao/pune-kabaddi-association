@@ -9,7 +9,6 @@ const IDPage = () => {
   let player = useQuery<User>({
     queryKey: ["player"],
     queryFn: async () => {
-      console.log("hetee");
       const res = await Axios.get(`/api/v1/players/get-player/${id}`);
       return res?.data?.data as User;
     },

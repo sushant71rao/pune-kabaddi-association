@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,6 +40,29 @@ export function PeopleDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [emailFilter, setEmailFilter] = useState("");
+  const [teamFilter, setTeamFilter] = useState("");
+
+  useEffect(() => {
+    const storedEmailFilter = localStorage.getItem("emailFilter");
+    const storedTeamFilter = localStorage.getItem("teamFilter");
+
+    if (storedEmailFilter) {
+      setEmailFilter(storedEmailFilter);
+      table.getColumn("email")?.setFilterValue(storedEmailFilter);
+    }
+
+    if (storedTeamFilter) {
+      setTeamFilter(storedTeamFilter);
+      table.getColumn("teamName")?.setFilterValue(storedTeamFilter);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("emailFilter", emailFilter);
+    localStorage.setItem("teamFilter", teamFilter);
+  }, [emailFilter, teamFilter]);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -77,6 +100,7 @@ export function PeopleDataTable<TData, TValue>({
           placeholder="Filter Emails"
           value={(table.getColumn("email")?.getFilterValue() as string) || ""}
           onChange={(e) => {
+            setEmailFilter(e.target.value);
             table.getColumn("email")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm mr-4"
@@ -87,6 +111,7 @@ export function PeopleDataTable<TData, TValue>({
             (table.getColumn("teamName")?.getFilterValue() as string) || ""
           }
           onChange={(e) => {
+            setTeamFilter(e.target.value);
             table.getColumn("teamName")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm"
