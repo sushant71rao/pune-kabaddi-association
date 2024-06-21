@@ -37,12 +37,13 @@ const IdCard = (prop: Prop) => {
         ID CARD
       </div>
       <div ref={componentRef}>
-        <div className=" flex flex-col justify-center items-center">
-          <div className="flex flex-col w-[27rem]  aspect-video">
-            <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
+        <div className=" flex gap-4 justify-center items-center">
+          <div className="w-[29rem] overlay aspect-video">
+            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
               <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg font-[600] tracking-wide">
-                Pune District kadaddi Association
+              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
+                <div>Pune District</div>
+                <div>Kabaddi Association</div>
               </div>
               <div className="">
                 <img
@@ -52,9 +53,10 @@ const IdCard = (prop: Prop) => {
                 ></img>
               </div>
             </div>
-            <div className="overlay flex uppercase justify-between gap-6  bg-blue-100 p-2 border-[1px]  border-black h-[12rem]">
+            <div className=" flex uppercase justify-between gap-6  p-2  h-[12rem]">
               <div className="flex flex-col h-full justify-between gap-2">
                 <img
+                  className="border-white border-2 rounded-md"
                   src={String(prop?.user?.avatar || "")}
                   alt={String(prop?.user?.firstName)}
                   width={100}
@@ -102,21 +104,22 @@ const IdCard = (prop: Prop) => {
               </div>
             </div>
           </div>
-          <div className="flex rotate-180 flex-col w-[27rem] aspect-video">
-            <div className="bg-blue-400 flex p-2 items-center justify-between gap-2 border-[1px] border-black">
+          <div className="flex-col overlay w-[29rem] aspect-video">
+            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
               <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg font-[600] tracking-wide">
-                पुणे जिल्हा कबड्डी असोसिएशन
+              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
+                <div>पुणे जिल्हा </div>
+                <div>कबड्डी असोसिएशन</div>
               </div>
               <div className="">
                 <img
-                  src={getTeam?.data?.logo?.toString() || ""}
+                  src={`${getTeam?.data?.logo?.toString()}`}
                   alt="logo"
                   width={44}
                 ></img>
               </div>
             </div>
-            <div className="flex overlay flex-col uppercase gap-3  bg-blue-100 p-4 border-[1px] items-center border-black w-full aspect h-[12rem]">
+            <div className="flex flex-col uppercase gap-3  p-4 items-center w-full aspect h-[12rem]">
               <div>
                 <span className="heading">Team : </span>
                 <span className="">{getTeam?.data?.teamName}</span>
