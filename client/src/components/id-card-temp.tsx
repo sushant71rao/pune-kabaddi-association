@@ -33,40 +33,41 @@ const IdCard = (prop: Prop) => {
 
   return (
     <div className="m-6">
-      <div className="text-2xl font-semibold uppercase mb-2">ID CARD</div>
+      <div className="text-2xl font-semibold">ID CARD</div>
       <div ref={componentRef}>
-        <div className=" flex gap-4 justify-center items-center">
-          <div className="w-[29rem] overlay aspect-video">
-            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
-              <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
-                <div>Pune District</div>
-                <div>Kabaddi Association</div>
+        <div className="flex gap-[5mm] justify-center items-center">
+          <div className="flex flex-col w-[85.725mm] h-[53.975mm] aspect-video rounded-sm overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 flex p-[8.4667mm] items-center justify-between gap-[8.4667mm]">
+              <img src="/assets/blue-logo.png" width={35}></img>
+              <div className="text-[3.3867mm] font-[500] tracking-wide text-white">
+                Pune District Kabaddi Association
               </div>
               <div className="">
                 <img
                   src={`${getTeam?.data?.logo?.toString()}`}
                   alt="logo"
-                  width={44}
+                  width={35}
                 ></img>
               </div>
             </div>
-            <div className=" flex uppercase justify-between gap-6  p-2  h-[12rem]">
-              <div className="flex flex-col h-full justify-between gap-2">
-                <img
-                  className="border-white border-2 rounded-md"
-                  src={String(prop?.user?.avatar || "")}
-                  alt={String(prop?.user?.firstName)}
-                  width={100}
-                ></img>
+            <div className="w-full flex justify-between gap-[25.3998mm] bg-gradient-to-r from-blue-200 to-blue-400 p-[8.4667mm] h-[50.7996mm]">
+              <div className="flex flex-col h-full justify-between gap-[8.4667mm]">
+                <div className="relative">
+                  <img
+                    src={String(prop?.user?.avatar || "")}
+                    alt={String(prop?.user?.firstName)}
+                    width={100}
+                    className="rounded-sm border-2 border-blue-500"
+                  ></img>
+                </div>
                 <img src="../assets/sign1.png" width={148}></img>
               </div>
-              <div className="w-full text-slate-900 flex flex-col gap-2">
+              <div className="w-full text-slate-900 flex flex-col gap-[8.4667mm]">
                 <div>
                   <span className="heading">Player ID: </span>
                   <span className="heading">{prop?.user?._id?.slice(-5)}</span>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-[4.2333mm]">
                   <span className="heading">Name: </span>
                   <span className="flex flex-col">
                     <span>
@@ -103,22 +104,21 @@ const IdCard = (prop: Prop) => {
               </div>
             </div>
           </div>
-          <div className="flex-col overlay w-[29rem] aspect-video">
-            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
+          <div className="flex flex-col w-[85.725mm] h-[53.975mm] aspect-video rounded-sm overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 flex p-[8.4667mm] items-center justify-between gap-[8.4667mm]">
               <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
-                <div>पुणे जिल्हा </div>
-                <div>कबड्डी असोसिएशन</div>
+              <div className="text-[6.08mm] font-[500] tracking-wide text-white">
+                पुणे जिल्हा कबड्डी असोसिएशन
               </div>
               <div className="">
                 <img
-                  src={`${getTeam?.data?.logo?.toString()}`}
+                  src={getTeam?.data?.logo?.toString() || ""}
                   alt="logo"
                   width={44}
                 ></img>
               </div>
             </div>
-            <div className="flex flex-col uppercase gap-3  p-4 items-center w-full aspect h-[12rem]">
+            <div className="flex  flex-col gap-[8.4667mm] bg-gradient-to-r from-blue-200 to-blue-400 p-[8.4667mm] items-center w-full h-[50.7996mm]">
               <div>
                 <span className="heading">Team: </span>
                 <span className="">{getTeam?.data?.teamName}</span>
@@ -131,7 +131,7 @@ const IdCard = (prop: Prop) => {
                 <span className="heading">Team PinCode: </span>
                 <span className="">{getTeam?.data?.pinCode}</span>
               </div>
-              <div className="flex justify-between w-full">
+              <div className="flex justify-between w-full ">
                 <img src="../assets/sign1.png" width={68}></img>
                 <img src="../assets/sign2.png" width={68}></img>
               </div>
@@ -139,9 +139,7 @@ const IdCard = (prop: Prop) => {
           </div>
         </div>
       </div>
-      <Button className="mt-4" onClick={() => handlePrint()}>
-        Print
-      </Button>
+      <Button onClick={() => handlePrint()}>Print</Button>
     </div>
   );
 };

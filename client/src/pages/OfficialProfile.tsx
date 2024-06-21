@@ -1,6 +1,4 @@
 "use client";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 import {
   Form,
@@ -26,78 +24,49 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useEffect, useState } from "react";
 
-const formSchema = playerProfileSchema;
+const formSchema = officialProfileSchema;
 
 import { useToast } from "@/components/ui/use-toast";
-import { playerProfileSchema, PlayerType } from "@/schemas/playerProfileSchema";
-import DocumentView from "@/components/DocumentView";
-import DocumentDownload from "./DocumentDownload";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import Axios from "@/Axios/Axios";
+import {
+  officialProfileSchema,
+  OfficialType,
+} from "@/schemas/officialProfileSchema";
 import { useParams } from "react-router-dom";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
+import DocumentDownload from "./DocumentDownload";
+import DocumentView from "@/components/DocumentView";
 
-const PlayerProfile = () => {
+const OfficialProfile = () => {
   const [profilePhoto, setProfilePhoto] = useState<File>();
-  const [birthCertificate, setBirthCertificate] = useState<File>();
+  const [passingCertificate, setPassingCertificate] = useState<File>();
   const [aadharCard, setAadharCard] = useState<File>();
-  const [open, setOpen] = useState(false);
-
   const { id } = useParams();
 
-  const {
-    data: teamData,
-    isPending: loadingTeams,
-    error: errorLoadingTeams,
-  } = useQuery({
-    queryKey: ["teams"],
+  const fetchOfficials = useQuery<OfficialType | undefined>({
+    queryKey: ["official", id],
     queryFn: async () => {
       try {
-        const response = await Axios.get("/api/v1/teams/get-teams");
-        return response.data;
+        const response = await Axios.get(
+          `/api/v1/officials/get-official/${id}`
+        );
+        // console.log(response.data.data);
+        return response.data.data as OfficialType;
       } catch (error) {
-        console.log("error while fetching teams");
+        console.log("error while fetching officials", error);
       }
     },
   });
 
-  const fetchPlayerQuery = useQuery<PlayerType | undefined>({
-    queryKey: ["player", id],
-    queryFn: async () => {
-      try {
-        const response = await Axios.get(`/api/v1/players/get-player/${id}`);
-        console.log(response.data.data);
-        return response.data.data as PlayerType;
-      } catch (error) {
-        console.log("error while fetching teams", error);
-      }
-    },
-  });
-
-  let { data } = fetchPlayerQuery;
-
-  const [date, setDate] = useState<Date | undefined>(
-    data?.birthDate || undefined
-  );
+  let { data } = fetchOfficials;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,38 +74,32 @@ const PlayerProfile = () => {
       firstName: data?.firstName || "",
       middleName: data?.middleName || "",
       lastName: data?.lastName || "",
-      playingSkill: data?.playingSkill || data?.playingSkill?.[0] || "",
-      gender: data?.gender || "",
-      teamName: data?.teamName || "",
       email: data?.email || "",
       phoneNo: data?.phoneNo || "",
-      birthDate: data?.birthDate || date,
+      passingYear: data?.passingYear || "",
+      gender: data?.gender || "",
       adharNumber: data?.adharNumber || "",
-      password: "",
-      achievements: [
-        { achievementYear: "", achievementTitle: "", achievementDocument: "" },
-      ],
     },
   });
 
   useEffect(() => {
-    if (fetchPlayerQuery.isSuccess) {
-      setDate(new Date(data?.birthDate || ""));
-
+    if (fetchOfficials.isSuccess) {
       form.reset(data);
     }
-  }, [fetchPlayerQuery.isSuccess, data, form]);
+  }, [fetchOfficials.isSuccess, data, form]);
 
   form.watch();
 
-  const registerPlayer = async (playerData: z.infer<typeof formSchema>) => {
-    console.log(playerData);
+  const { toast } = useToast();
+
+  const registerOfficial = async (officialData: z.infer<typeof formSchema>) => {
+    console.log(officialData);
     {
-      let formData = form.getValues();
+      const formData = form.getValues();
 
       try {
         const response = await Axios.patch(
-          `/api/v1/players/update-player-details/${id}`,
+          `/api/v1/officials/update-official-details/${id}`,
           {
             ...formData,
           }
@@ -152,14 +115,12 @@ const PlayerProfile = () => {
     }
   };
 
-  const { toast } = useToast();
-
   const FileUpdate = useMutation({
     mutationKey: ["fileupdate"],
     mutationFn: async (files: any) => {
       try {
         let response = await Axios.patch(
-          `/api/v1/players/update-files/${id}`,
+          `/api/v1/officials/update-files/${id}`,
           files,
           {
             // withCredentials: true,
@@ -182,13 +143,13 @@ const PlayerProfile = () => {
     },
   });
 
-  const registerPlayerMutation = useMutation({
-    mutationKey: ["registerPlayer"],
-    mutationFn: registerPlayer,
+  const registerOfficialMutation = useMutation({
+    mutationKey: ["registerOfficial"],
+    mutationFn: registerOfficial,
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Registration Failed !!",
+        title: "Update Failed !!",
         description: `${error}`,
       });
     },
@@ -196,20 +157,21 @@ const PlayerProfile = () => {
       toast({
         variant: "default",
         title: "Success",
-        description: "Player Updated Successfully",
+        description: "Official Updated Successfully",
       });
     },
   });
-  const onSubmit = (playerData: z.infer<typeof formSchema>) => {
-    console.log(playerData);
-    registerPlayerMutation.mutate(playerData);
+
+  const onSubmit = (officialData: z.infer<typeof formSchema>) => {
+    // console.log(officialData);
+    registerOfficialMutation.mutate(officialData);
   };
 
   return (
     <Card className="max-w-2xl sm:mx-auto mx-4 p-4 my-32">
       <CardHeader>
         <CardTitle className="text-3xl font-black text-slate-700">
-          Update Details
+          Official Profile
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -224,7 +186,7 @@ const PlayerProfile = () => {
                   <FormItem className="md:w-fit w-full">
                     <FormLabel>First Name*</FormLabel>
                     <FormControl>
-                      <Input placeholder="First name" {...field} />
+                      <Input placeholder="Your name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -257,6 +219,7 @@ const PlayerProfile = () => {
                 )}
               />
             </div>
+
             {/* Email */}
             <FormField
               control={form.control}
@@ -271,6 +234,7 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
+
             {/* Phone Number */}
             <FormField
               control={form.control}
@@ -285,6 +249,7 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
+
             {/* Birth Date */}
             <FormField
               control={form.control}
@@ -311,26 +276,26 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
+
             {/* Gender */}
             <FormField
               control={form.control}
               name="gender"
               render={({ field }) => (
                 <FormItem>
-                  {/* {console.log(field.value)} */}
                   <FormLabel>Select your Gender*</FormLabel>
 
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-[280px]">
-                        <SelectValue
-                          placeholder="Select Gender"
-                          defaultValue={field?.value}
-                        />
+                        <SelectValue placeholder="Select Gender" />
                       </SelectTrigger>
                     </FormControl>
                     <FormMessage />
-                    <SelectContent defaultValue={field?.value}>
+                    <SelectContent>
                       <SelectGroup>
                         <SelectItem value="m">Male</SelectItem>
                         <SelectItem value="f">Female</SelectItem>
@@ -340,125 +305,45 @@ const PlayerProfile = () => {
                 </FormItem>
               )}
             />
-            {/* Team Name */}
 
+            {/* Passing Year */}
             <FormField
               control={form.control}
-              name="teamName"
-              render={({ field }) => (
-                <FormItem className="flex flex-col ">
-                  <FormLabel>Select Your Team*</FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        className=" justify-between min-w-[300px] w-fit"
-                      >
-                        {field?.value
-                          ? teamData?.data?.find(
-                              (team: { teamName: string }) =>
-                                team.teamName?.toString() === field?.value
-                            )?.teamName
-                          : "Select Team"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Select Team" />
-                        {loadingTeams ? (
-                          <div className="flex justify-center p-4">
-                            <p>Loading teams</p>
-                          </div>
-                        ) : errorLoadingTeams ? (
-                          <div className="flex justify-center p-4 text-red-500">
-                            Error loading teams
-                          </div>
-                        ) : (
-                          <CommandList>
-                            <CommandEmpty>No team found.</CommandEmpty>
-                            <CommandGroup>
-                              {teamData?.data?.map(
-                                (team: { _id: number; teamName: string }) => (
-                                  <CommandItem
-                                    key={team._id}
-                                    value={team.teamName}
-                                    onSelect={(currentValue) => {
-                                      field.onChange(currentValue);
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={`mr-2 h-4 w-4 ${
-                                        field.value === team.teamName
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      }`}
-                                    />
-                                    {team.teamName}
-                                  </CommandItem>
-                                )
-                              )}
-                            </CommandGroup>
-                          </CommandList>
-                        )}
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
-            {/* Playing Skill */}
-            <FormField
-              control={form.control}
-              name="playingSkill"
+              name="passingYear"
               render={({ field }) => (
                 <FormItem>
-                  {/* {console.log(field?.value)} */}
-                  <FormLabel>Playing Skill*</FormLabel>
-                  <Select value={field?.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue
-                          placeholder="Select Position"
-                          defaultValue={field?.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <FormMessage />
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="raider">Raider</SelectItem>
-                        <SelectItem value="defender">Defender</SelectItem>
-                        <SelectItem value="allRounder">All Rounder</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            {/* Adhar Number */}
-            <FormField
-              control={form.control}
-              name="adharNumber"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Enter Adhar Number*</FormLabel>
+                  <FormLabel>Passing Year*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Adhar number" {...field} />
+                    <Input placeholder="Write your passing year" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Adhar Number and Card */}
+            <div className="flex gap-4 flex-wrap">
+              <FormField
+                control={form.control}
+                name="adharNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Enter Adhar Number*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Write your adhar number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <Button
               type="submit"
               className="w-full mt-4"
-              disabled={registerPlayerMutation.isPending}
+              disabled={registerOfficialMutation.isPending}
             >
-              {registerPlayerMutation.isPending ? (
+              {registerOfficialMutation.isPending ? (
                 <>
                   Submitting{" "}
                   <img
@@ -472,11 +357,12 @@ const PlayerProfile = () => {
               )}
             </Button>
             <p className="text-red-600 font-semibold">
-              {registerPlayerMutation.error &&
-                registerPlayerMutation.error?.message}{" "}
+              {registerOfficialMutation.error &&
+                registerOfficialMutation.error?.message}{" "}
             </p>
           </form>
         </Form>
+
         <div className="flex flex-col gap-3 ">
           <div className="flex justify-between items-end">
             <div className="flex gap-2 items-end">
@@ -520,39 +406,41 @@ const PlayerProfile = () => {
           <div className="flex justify-between items-end">
             <div className="flex gap-2 items-end">
               <div>
-                <div className="text-sm font-medium">Birth Certificate</div>
+                <div className="text-sm font-medium">Passing Certificate</div>
                 <Input
                   type="file"
                   onChange={(e) => {
-                    setBirthCertificate(e?.target?.files?.[0] || ({} as File));
+                    setPassingCertificate(
+                      e?.target?.files?.[0] || ({} as File)
+                    );
                   }}
                 ></Input>
               </div>
               <div className="flex gap-1">
                 <DocumentView
                   imgUrl={
-                    birthCertificate
-                      ? URL.createObjectURL(birthCertificate)
-                      : data?.birthCertificate
+                    passingCertificate
+                      ? URL.createObjectURL(passingCertificate)
+                      : data?.passingCertificate
                   }
                 />
                 <DocumentDownload
                   imgUrl={
-                    birthCertificate
-                      ? URL.createObjectURL(birthCertificate)
-                      : data?.birthCertificate
+                    passingCertificate
+                      ? URL.createObjectURL(passingCertificate)
+                      : data?.passingCertificate
                   }
                 />
               </div>
             </div>
             <Button
               onClick={() => {
-                // console.log(birthCertificate);
+                // console.log(passingCertificate);
                 const formData = new FormData();
                 formData.append(
-                  "birthCertificate",
-                  birthCertificate!,
-                  birthCertificate?.name
+                  "passingCertificate",
+                  passingCertificate!,
+                  passingCertificate?.name
                 );
                 FileUpdate.mutate(formData);
               }}
@@ -605,4 +493,4 @@ const PlayerProfile = () => {
   );
 };
 
-export default PlayerProfile;
+export default OfficialProfile;

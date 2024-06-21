@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   LoginTeam,
+  deleteTeam,
   getAllTeams,
   getTeam,
   getTeamByPin,
@@ -24,6 +25,7 @@ router.route("/teaminfo").post(getTeamByPin);
 router.route("/zone/:id").get(getZone);
 
 router.route("/get-team/:id").get(getTeam);
+router.route("/delete-team/:id").delete(deleteTeam);
 
 router.route("/login").post(LoginTeam);
 

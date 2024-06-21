@@ -52,7 +52,7 @@ const registerTeam = asyncHandler(async (req, res) => {
   const logo = await uploadFileToS3(logoLocalPath);
 
   if (!logo) {
-    throw new ApiError(400, "Logo not uploaded on cloudinary");
+    throw new ApiError(400, "Logo not uploaded on S3");
   }
   let pAgeGroup = JSON.parse(ageGroup);
   // console.log(pAgeGroup);
@@ -150,6 +150,21 @@ const getTeam = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, team, "fetched team"));
 });
 
+const deleteTeam = asyncHandler(async (req, res) => {
+  const teamId = req.params.id;
+  const team = await Team.findById(teamId);
+
+  if (!team) {
+    throw new ApiError(404, "team not found");
+  }
+
+  await Team.deleteOne({ _id: teamId });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Player deleted successfully"));
+});
+
 const updateTeamDetails = asyncHandler(async (req, res) => {
   const { _id, ...rest } = req.body;
 
@@ -187,40 +202,13 @@ const updateLogo = asyncHandler(async (req, res, next) => {
   });
 });
 
-// const logoutTeam = asyncHandler(async (req, res) => {
-//   let team = await Team.findByIdAndUpdate(
-//     req.user._id,
-//     {
-//       $set: {
-//         refreshToken: undefined,
-//       },
-//     },
-//     {
-//       new: true,
-//     }
-//   );
-//   if (!team) {
-//     return next(new ApiError(404, "No Team Found"));
-//   }
-
-//   const options = {
-//     httpOnly: true,
-//     secure: true,
-//   };
-
-//   return res
-//     .status(200)
-//     .clearCookie("accessToken", options)
-//     .clearCookie("refreshToken", options)
-//     .json(new ApiResponse(200, {}, "Team logged out successfully"));
-// });
-
 const LoginTeam = LoginUtil(Team);
 
 export {
   registerTeam,
   getAllTeams,
   getTeam,
+  deleteTeam,
   LoginTeam,
   updateLogo,
   updateTeamDetails,
