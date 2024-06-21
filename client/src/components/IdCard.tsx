@@ -35,12 +35,13 @@ const IdCard = (prop: Prop) => {
     <div className="m-6">
       <div className="text-2xl font-semibold uppercase mb-2">ID CARD</div>
       <div ref={componentRef}>
-        <div className="flex gap-[5mm] justify-center items-center">
-          <div className="flex flex-col w-[27rem] aspect-video rounded-lg overflow-hidden shadow-lg">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 flex p-2 items-center justify-between gap-2">
+        <div className=" flex gap-4 justify-center items-center">
+          <div className="w-[29rem] overlay aspect-video">
+            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
               <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg font-[600] tracking-wide text-white">
-                Pune District Kabaddi Association
+              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
+                <div>Pune District</div>
+                <div>Kabaddi Association</div>
               </div>
               <div className="">
                 <img
@@ -50,16 +51,14 @@ const IdCard = (prop: Prop) => {
                 ></img>
               </div>
             </div>
-            <div className="w-full flex justify-between gap-6 bg-gradient-to-r from-blue-200 to-blue-400 p-2 h-[12rem]">
+            <div className=" flex uppercase justify-between gap-6  p-2  h-[12rem]">
               <div className="flex flex-col h-full justify-between gap-2">
-                <div className="relative">
-                  <img
-                    src={String(prop?.user?.avatar || "")}
-                    alt={String(prop?.user?.firstName)}
-                    width={100}
-                    className="rounded-sm border-1 border-blue-500"
-                  ></img>
-                </div>
+                <img
+                  className="border-white border-2 rounded-md"
+                  src={String(prop?.user?.avatar || "")}
+                  alt={String(prop?.user?.firstName)}
+                  width={100}
+                ></img>
                 <img src="../assets/sign1.png" width={148}></img>
               </div>
               <div className="w-full text-slate-900 flex flex-col gap-2">
@@ -104,21 +103,22 @@ const IdCard = (prop: Prop) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-[27rem] aspect-video rounded-lg overflow-hidden shadow-lg">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 flex p-2 items-center justify-between gap-2">
+          <div className="flex-col overlay w-[29rem] aspect-video">
+            <div className="flex mt-3 m-4 mb-3 rounded-xl pt-2 pb-2 p-6 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-2">
               <img src="/assets/blue-logo.png" width={57}></img>
-              <div className="text-lg font-[600] tracking-wide text-white">
-                पुणे जिल्हा कबड्डी असोसिएशन
+              <div className="text-lg text-center line-clamp-2 text-[#fef58a] tracking-[1.5px] font-semibold uppercase">
+                <div>पुणे जिल्हा </div>
+                <div>कबड्डी असोसिएशन</div>
               </div>
               <div className="">
                 <img
-                  src={getTeam?.data?.logo?.toString() || ""}
+                  src={`${getTeam?.data?.logo?.toString()}`}
                   alt="logo"
                   width={44}
                 ></img>
               </div>
             </div>
-            <div className="w-full  flex flex-col gap-3 bg-gradient-to-r from-blue-200 to-blue-400 p-4 items-center h-[12rem]">
+            <div className="flex flex-col uppercase gap-3  p-4 items-center w-full aspect h-[12rem]">
               <div>
                 <span className="heading">Team: </span>
                 <span className="">{getTeam?.data?.teamName}</span>
