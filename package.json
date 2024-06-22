@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "jotai": "^2.8.3",
     "react-to-print": "^2.15.1"
   }
 }

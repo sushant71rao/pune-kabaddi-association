@@ -84,6 +84,12 @@ export function PeopleDataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
 
+    initialState: {
+      pagination: {
+        pageSize: 50,
+      },
+    },
+
     state: {
       sorting,
       columnFilters,

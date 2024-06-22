@@ -20,11 +20,21 @@ export const playerProfileSchema = z.object({
     .min(2, { message: "Last Name should be min 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
   phoneNo: z.string().min(10, { message: "Invalid phone number." }),
+
+  birthDate: z.coerce.date(),
+  gender: z.string().refine((value) => ["m", "f"].includes(value), {
+    message: "Invalid gender.",
+  }),
+  teamName: z.string().min(1, { message: "Team Name is required." }),
+  playingSkill: z.string().min(1, {
+    message: "Playing Position is required.",
+  }),
+  adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
+
   avatar: z
     .any()
     .nullable()
     .refine((files) => {
-      //Condition to return true if no file exists or even for the string of image is found
       if (!files?.length || typeof files == typeof "") {
         return true;
       }
@@ -36,15 +46,6 @@ export const playerProfileSchema = z.object({
       }
       ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
     }, ".jpg, .jpeg, .png and .webp files are accepted."),
-  birthDate: z.coerce.date(),
-  gender: z.string().refine((value) => ["m", "f"].includes(value), {
-    message: "Invalid gender.",
-  }),
-  teamName: z.string().min(1, { message: "Team Name is required." }),
-  playingSkill: z.string().min(1, {
-    message: "Playing Position is required.",
-  }),
-  adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
   adharCard: z
     .any()
     .nullable()

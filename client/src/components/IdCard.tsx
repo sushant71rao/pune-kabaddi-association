@@ -16,6 +16,16 @@ const IdCard = (prop: Prop) => {
     content: () => componentRef.current!,
   });
 
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const formattedDate = formatDate(prop?.user?.birthDate);
+
   let getTeam = useQuery<Team>({
     queryKey: ["player-team"],
     queryFn: async () => {
@@ -80,9 +90,7 @@ const IdCard = (prop: Prop) => {
                 </div>
                 <div>
                   <span className="heading">DOB: </span>
-                  <span>
-                    {prop?.user?.birthDate?.toLocaleString().slice(0, 10)}
-                  </span>
+                  <span>{formattedDate}</span>
                 </div>
                 <div>
                   <span className="heading">Contact: </span>
@@ -127,10 +135,7 @@ const IdCard = (prop: Prop) => {
                 <span className="heading">Zone: </span>
                 <span className="">{getTeam?.data?.zone}</span>
               </div>
-              <div>
-                <span className="heading">Team PinCode: </span>
-                <span className="">{getTeam?.data?.pinCode}</span>
-              </div>
+
               <div className="flex justify-between w-full">
                 <img src="../assets/sign1.png" width={68}></img>
                 <img src="../assets/sign2.png" width={68}></img>
