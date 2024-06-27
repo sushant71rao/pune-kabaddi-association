@@ -4,7 +4,6 @@ import { Team, User } from "@/schemas/types";
 import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import Axios from "@/Axios/Axios";
-import { useReactToPrint } from "react-to-print";
 
 interface Prop {
   user: User;
@@ -12,9 +11,6 @@ interface Prop {
 
 const IdCard = (prop: Prop) => {
   const componentRef = useRef(null);
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current!,
-  });
 
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
@@ -46,7 +42,7 @@ const IdCard = (prop: Prop) => {
       <div className="text-2xl font-semibold uppercase mb-2">ID CARD</div>
       <div ref={componentRef}>
         <div className=" flex gap-4 justify-center items-center">
-          <div className="w-[88mm] h-[56mm] overlay aspect-video ">
+          <div className="w-[88mm] h-[56mm] overlay aspect-video border-b-8 border-blue-700">
             <div className="flex mt-1 m-2 mb-1 rounded-xl pt-1 pb-1 p-2 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase">
@@ -158,9 +154,7 @@ const IdCard = (prop: Prop) => {
           </div>
         </div>
       </div>
-      <Button className="mt-4" onClick={() => handlePrint()}>
-        Print
-      </Button>
+      <Button className="mt-4">Download</Button>
     </div>
   );
 };
