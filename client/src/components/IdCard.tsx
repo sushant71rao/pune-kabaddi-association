@@ -11,9 +11,14 @@ interface Prop {
 }
 
 const IdCard = (prop: Prop) => {
-  const componentRef = useRef(null);
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current!,
+  const componentRefFront = useRef(null);
+  const componentRefBack = useRef(null);
+
+  const handlePrintFront = useReactToPrint({
+    content: () => componentRefFront.current!,
+  });
+  const handlePrintBack = useReactToPrint({
+    content: () => componentRefBack.current!,
   });
 
   const formatDate = (dateString: any) => {
@@ -44,9 +49,12 @@ const IdCard = (prop: Prop) => {
   return (
     <div className="m-6">
       <div className="text-2xl font-semibold uppercase mb-2">ID CARD</div>
-      <div ref={componentRef}>
+      <div>
         <div className=" flex gap-4 justify-center items-center">
-          <div className="w-[88mm] h-[56mm] overlay aspect-video ">
+          <div
+            ref={componentRefFront}
+            className="w-[88mm] h-[56mm] overlay aspect-video "
+          >
             <div className="flex mt-1 m-2 mb-1 rounded-xl pt-1 pb-1 p-2 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase">
@@ -111,7 +119,10 @@ const IdCard = (prop: Prop) => {
             </div>
           </div>
 
-          <div className="w-[88mm] h-[56mm] overlay aspect-video">
+          <div
+            ref={componentRefBack}
+            className="w-[88mm] h-[56mm] overlay aspect-video"
+          >
             <div className="flex mt-1 m-2 mb-1 rounded-xl pt-1 pb-1 p-2 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase r">
@@ -158,9 +169,14 @@ const IdCard = (prop: Prop) => {
           </div>
         </div>
       </div>
-      <Button className="mt-4" onClick={() => handlePrint()}>
-        Print
-      </Button>
+      <div className="flex gap-4 items-center justify-center  mt-4">
+        <Button className="mt-4" onClick={() => handlePrintFront()}>
+          Print Front
+        </Button>
+        <Button className="mt-4" onClick={() => handlePrintBack()}>
+          Print Back{" "}
+        </Button>
+      </div>
     </div>
   );
 };
