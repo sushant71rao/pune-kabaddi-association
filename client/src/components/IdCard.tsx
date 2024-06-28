@@ -149,13 +149,13 @@ const IdCard = (prop: Prop) => {
                   <span className="text-xs">{getTeam?.data?.zone}</span>
                 </div>
                 <div className="text-center">
-                  <span className="heading">Website </span>
+                  <span className="heading">Website: </span>
                   <span className="text-xs">
                     www.punekabaddiassociation.com
                   </span>
                 </div>
                 <div className="text-center">
-                  <span className="heading">Address </span>
+                  <span className="heading">Address: </span>
                   <span className="text-xs">
                     Pandit Nehru Stadium "K" Block Saras Bang Dada wadi Shukrvar
                     Peth Pune - 411002
