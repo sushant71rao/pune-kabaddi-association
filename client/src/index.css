@@ -66,6 +66,19 @@
   }
 }
 
+@media print {
+  .id-card {
+    page-break-inside: avoid;
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  @page {
+    size: 88mm 56mm;
+    margin: 0;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

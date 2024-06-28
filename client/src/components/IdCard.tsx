@@ -53,9 +53,9 @@ const IdCard = (prop: Prop) => {
         <div className=" flex gap-4 justify-center items-center">
           <div
             ref={componentRefFront}
-            className="w-[88mm] h-[56mm] overlay aspect-video "
+            className="id-card w-[88mm] h-[56mm] overlay aspect-video "
           >
-            <div className="flex mt-1 m-2 mb-1 rounded-xl pt-1 pb-1 p-2 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
+            <div className="flex p-1 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase">
                 <div>Pune District</div>
@@ -69,6 +69,7 @@ const IdCard = (prop: Prop) => {
                 ></img>
               </div>
             </div>
+
             <div className="flex  justify-between gap-3 p-1 h-[70%] m-2">
               <div className="flex flex-col h-full justify-between gap-1 w-40">
                 <img
@@ -123,7 +124,7 @@ const IdCard = (prop: Prop) => {
             ref={componentRefBack}
             className="w-[88mm] h-[56mm] overlay aspect-video"
           >
-            <div className="flex mt-1 m-2 mb-1 rounded-xl pt-1 pb-1 p-2 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1">
+            <div className="flex p-1  bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase r">
                 <div>पुणे जिल्हा </div>
