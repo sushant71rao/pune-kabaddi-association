@@ -25,11 +25,9 @@ export const playerProfileSchema = z.object({
   gender: z.string().refine((value) => ["m", "f"].includes(value), {
     message: "Invalid gender.",
   }),
-  teamName: z.string().min(1, { message: "Team Name is required." }),
-  playingSkill: z.string().min(1, {
-    message: "Playing Position is required.",
-  }),
-  adharNumber: z.string().min(12, { message: "Invalid Aadhar number." }),
+  teamName: z.any(),
+  playingSkill: z.any(),
+  adharNumber: z.any(),
 
   avatar: z
     .any()
@@ -79,9 +77,7 @@ export const playerProfileSchema = z.object({
       }
       ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
     }, ".jpg, .jpeg, .png and .webp files are accepted."),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 5 characters." }),
+  password: z.any(),
 
   achievements: z.array(achievementSchema),
 });

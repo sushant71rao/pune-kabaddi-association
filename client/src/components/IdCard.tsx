@@ -76,7 +76,7 @@ const IdCard = (prop: Prop) => {
                   className="border-white border rounded-md w-28"
                   src={String(prop?.user?.avatar || "")}
                   alt={String(prop?.user?.firstName)}
-                  width={120}
+                  width={10}
                 ></img>
                 <img src="../assets/sign1.png" width={74}></img>
               </div>
