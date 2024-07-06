@@ -55,7 +55,7 @@ const IdCard = (prop: Prop) => {
             ref={componentRefFront}
             className="id-card w-[88mm] h-[56mm] overlay aspect-video "
           >
-            <div className="flex p-1 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
+            <div className="flex py-2 px-4 bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1 ">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase">
                 <div>Pune District</div>
@@ -124,7 +124,7 @@ const IdCard = (prop: Prop) => {
             ref={componentRefBack}
             className="w-[88mm] h-[56mm] overlay aspect-video"
           >
-            <div className="flex p-1  bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1">
+            <div className="flex py-2 px-4  bg-gradient-to-b from-[#284369] to-[#0368b5] items-center justify-between gap-1">
               <img src="/assets/blue-logo.png" width={30}></img>
               <div className="text-sm text-center line-clamp-2 text-[#fef58a] tracking-[0.75px] font-semibold uppercase r">
                 <div>पुणे जिल्हा </div>
