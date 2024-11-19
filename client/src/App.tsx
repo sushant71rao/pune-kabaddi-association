@@ -18,6 +18,7 @@ import Profile from "./pages/Profile.tsx";
 import IDPage from "./pages/IDPage.tsx";
 import TeamProfile from "./pages/TeamProfile.tsx";
 import OfficialProfile from "./pages/OfficialProfile.tsx";
+import CreateCompetition from "./pages/Competition.tsx";
 
 function App() {
   let { user } = useContext(AuthContext);
@@ -41,6 +42,10 @@ function App() {
               />
               <Route path="/id-card/:id" element={<IDPage></IDPage>} />
               <Route path="/team-registration" element={<TeamRegistration />} />
+              <Route
+                path="/competition-registration"
+                element={<CreateCompetition />}
+              />
               <Route path="/profile" element={<Profile></Profile>} />
               {user?.isAdmin && (
                 <>

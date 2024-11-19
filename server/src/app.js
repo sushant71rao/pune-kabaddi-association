@@ -26,6 +26,7 @@ app.use(cookieParser());
 import teamRouter from "./routes/team.routes.js";
 import playerRouter from "./routes/player.routes.js";
 import officialRouter from "./routes/official.routes.js";
+import competitionRoutes from "./routes/competition.routes.js";
 import errorfn from "./middlewares/error.js";
 
 // for file uploading
@@ -36,7 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/v1/teams", teamRouter);
 app.use("/api/v1/players", playerRouter);
 app.use("/api/v1/officials", officialRouter);
-
+app.use("/api/v1/competitions", competitionRoutes);
 app.use(errorfn);
 
 export { app };
