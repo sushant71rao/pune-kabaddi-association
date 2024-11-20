@@ -6,6 +6,7 @@ import MaxWidthWrapper from "../MaxWidthWrapper";
 import { Card, CardContent } from "../ui/card";
 import { useQuery } from "@tanstack/react-query";
 import Axios from "@/Axios/Axios";
+import { Link } from "react-router-dom";
 
 interface Competition {
   _id: string;
@@ -66,9 +67,12 @@ const Competitions = () => {
                   <p className="mb-3 font-normal text-gray-700 line-clamp-2">
                     {competition.description}
                   </p>
-                  <Button variant="outline" className="mt-2">
-                    Read More
-                  </Button>
+                  <Link
+                    to={`/competition-details/${competition._id}`}
+                    className="p-2"
+                  >
+                    Read more
+                  </Link>
                 </div>
               </CardContent>
             </a>

@@ -27,3 +27,21 @@ export type Team = {
   pinCode?: String;
   logo?: String;
 };
+
+export interface Competition {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  location: string;
+  organizer: string;
+  organiserContact: string;
+  zone: string;
+  ageGroup: string[];
+  teams: string[];
+  players: string[];
+  posterImage?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+

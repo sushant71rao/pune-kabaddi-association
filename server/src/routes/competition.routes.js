@@ -4,6 +4,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import {
   createCompetition,
   getCompetitions,
+  competitionDetails,
 } from "../controllers/competition.controller.js";
 
 const router = Router();
@@ -16,5 +17,7 @@ router
   );
 
 router.route("/get").get(getCompetitions);
+
+router.route("/get/:id").get(competitionDetails);
 
 export default router;
