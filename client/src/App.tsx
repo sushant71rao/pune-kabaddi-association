@@ -19,6 +19,7 @@ import IDPage from "./pages/IDPage.tsx";
 import TeamProfile from "./pages/TeamProfile.tsx";
 import OfficialProfile from "./pages/OfficialProfile.tsx";
 import CreateCompetition from "./pages/Competition.tsx";
+import CompetionDetails from "./pages/CompetionDetails.tsx";
 
 function App() {
   let { user } = useContext(AuthContext);
@@ -45,6 +46,10 @@ function App() {
               <Route
                 path="/competition-registration"
                 element={<CreateCompetition />}
+              />
+              <Route
+                path="/competition-details/:id"
+                element={<CompetionDetails />}
               />
               <Route path="/profile" element={<Profile></Profile>} />
               {user?.isAdmin && (

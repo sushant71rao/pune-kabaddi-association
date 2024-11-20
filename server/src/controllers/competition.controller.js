@@ -79,3 +79,20 @@ export const getCompetitions = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch competitions." });
   }
 };
+
+export const competitionDetails = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const data = await Competition.findOne({ _id: id });
+
+    if (!data) {
+      res.status(404).json({ Success: false, message: "Data not found" });
+      return;
+    }
+    res.status(200).json({ Success: true, data: data });
+    return;
+  } catch (err) {
+    res.status(404).json({ Success: false, message: "Internal server error!" });
+  }
+};
