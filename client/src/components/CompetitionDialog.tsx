@@ -9,7 +9,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useParams } from "react-router-dom";
 import Axios from "@/Axios/Axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -38,7 +37,6 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
   const {
     data: teams,
     isLoading,
-    isFetched,
     isError,
   } = useQuery({
     queryKey: ["teams"],

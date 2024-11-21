@@ -1,6 +1,3 @@
-"use client";
-
-import { Button } from "../ui/button";
 import Heading from "../Heading";
 import MaxWidthWrapper from "../MaxWidthWrapper";
 import { Card, CardContent } from "../ui/card";
