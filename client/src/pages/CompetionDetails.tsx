@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import Axios from "@/Axios/Axios";
 import { useQuery } from "@tanstack/react-query";
@@ -42,10 +41,6 @@ const CompetitionDetails = () => {
       </div>
     );
   }
-
-  const handleRegister = () => {
-    alert(`Register your team for the competition: ${competition.title}`);
-  };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50 p-6 text-gray-800">
@@ -101,7 +96,7 @@ const CompetitionDetails = () => {
 
       {/* Register Button */}
       <div className="mt-10">
-        <RegisterTeamButton />
+        <RegisterTeamButton id={competition?._id} />
       </div>
       {/* Description */}
       <div className="mt-12 w-full max-w-4xl">

@@ -5,6 +5,7 @@ import {
   createCompetition,
   getCompetitions,
   competitionDetails,
+  AddTeam,
 } from "../controllers/competition.controller.js";
 
 const router = Router();
@@ -19,5 +20,6 @@ router
 router.route("/get").get(getCompetitions);
 
 router.route("/get/:id").get(competitionDetails);
+router.route("/:id").post(AddTeam);
 
 export default router;
