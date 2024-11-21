@@ -29,6 +29,7 @@ export type Team = {
 };
 
 export interface Competition {
+  _id: string;
   title: string;
   description: string;
   startDate: Date;
@@ -44,4 +45,3 @@ export interface Competition {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
