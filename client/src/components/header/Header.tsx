@@ -74,7 +74,9 @@ const Header = () => {
               variant="outline"
               className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all px-4 py-2 text-sm"
             >
-              <Link to="/add-competition">Add Competition</Link>
+              {user?.isAdmin && (
+                <Link to="admin/competition-registration">Add Competition</Link>
+              )}
             </Button>
 
             {/* Login Button or Profile Dropdown */}

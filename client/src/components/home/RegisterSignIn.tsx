@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
   Card,
   CardDescription,
-  CardFooter,
+  // CardFooter,
   CardHeader,
   CardTitle,
   CardContent,
@@ -95,8 +95,8 @@ const RegisterSingIn = () => {
 
   return (
     <MaxWidthWrapper>
-      <div className="flex sm:flex-row flex-col gap-4 ">
-        <Card className="w-full sm:w-4/5">
+      <div className="flex sm:flex-row flex-col gap-4   items-center justify-center">
+        {/* <Card className="w-full sm:w-4/5">
           <CardHeader>
             <CardTitle className="text-3xl font-black text-slate-700">
               Register
@@ -116,8 +116,8 @@ const RegisterSingIn = () => {
               <Button className="w-full">As Umpire</Button>
             </Link>
           </CardFooter>
-        </Card>
-        <Card className="w-full sm:w-4/5">
+        </Card> */}
+        <Card className="w-full sm:w-3/5">
           <CardHeader>
             <CardTitle className="text-3xl font-black text-slate-700">
               Sign In
