@@ -4,6 +4,7 @@ import {
   getAllPlayers,
   getCurrentPlayer,
   getPlayer,
+  getTeamPlayers,
   LoginPlayer,
   logoutPlayer,
   registerPlayer,
@@ -39,7 +40,7 @@ router.route("/update-files/:id").patch(
 );
 
 router.route("/login").post(LoginPlayer);
-router.route("/get-players").get(getAllPlayers);
+router.route("/get-players").get(getAllPlayers).post(getTeamPlayers);
 router.route("/get-player/:id").get(getPlayer);
 router.route("/delete-player/:id").delete(deletePlayer);
 router.route("/update-player-details/:id").patch(updatePlayerDetails);

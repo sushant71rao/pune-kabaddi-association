@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -26,18 +26,64 @@ import {
 } from "@/components/ui/command";
 import { ChevronsUpDown, Check } from "lucide-react";
 import { useToast } from "./ui/use-toast";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { TeamCompetitionForm } from "@/schemas/TeamCompetitionSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const RegisterTeamButton = ({ id }: { id: string }) => {
-  const [teamSelect, setTeam] = useState({ _id: "", name: "" }); // State for selected team name
-  const [isDialogOpen, setDialogOpen] = useState(false); // State for dialog visibility
-  const [openPopover, setOpenPopover] = useState(false); // State for popover visibility
+  const [teamSelect, setTeam] = useState({ _id: "", name: "" });
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Fetch teams using React Query
+  const categories = [
+    { id: "subJunior", label: "Sub Junior" },
+    { id: "junior", label: "Junior" },
+    { id: "open", label: "Open" },
+  ];
+
+  const zones = [
+    {
+      name: "पुणे शहर",
+    },
+    {
+      name: "पिंपरी चिंचवड",
+    },
+    {
+      name: "पुणे ग्रामीण",
+    },
+  ];
+
+  const form = useForm<z.infer<typeof TeamCompetitionForm>>({
+    resolver: zodResolver(TeamCompetitionForm),
+    defaultValues: {
+      team: { teamId: "", name: "" },
+      zone: "",
+      category: "",
+      players: [],
+    },
+  });
+
   const {
     data: teams,
-    isLoading,
-    isError,
+    isLoading: teamLoading,
+    isError: teamError,
   } = useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
@@ -53,7 +99,6 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
         const res = await Axios.post(`/api/v1/competitions/${id}`, {
           teamId: teamSelect?._id,
         });
-        console.log(res?.data);
         toast({
           variant: "default",
           title: "Success",
@@ -63,7 +108,6 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
         console.log(error);
       }
     },
-
     onError: (error: any) => {
       toast({
         variant: "destructive",
@@ -73,23 +117,47 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
     },
   });
 
-  const handleSelectTeam = ({ id, name }: { id: string; name: string }) => {
-    setTeam({ _id: id, name: name }); // Update the selected team
-    setOpenPopover(false); // Close the popover
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = (data: z.infer<typeof TeamCompetitionForm>) => {
     if (!teamSelect?.name.trim()) {
-      alert("Please select a valid team!");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select a valid team!",
+      });
     } else {
       mutate();
       setDialogOpen(false);
     }
   };
 
+  const [Players, setPlayers] = useState<
+    {
+      _id: string;
+      firstName: string;
+      middleName: string;
+      lastName: string;
+      playingSkill: string;
+    }[]
+  >([]);
+
+  const fetchPlayers = async (teamName: string) => {
+    if (teamName) {
+      console.log(teamName);
+      try {
+        const res = await Axios.post("/api/v1/players/get-players", {
+          teamName: teamName,
+        });
+        console.log(res?.data);
+        setPlayers(res.data?.data || []);
+        console.log(res.data); // Handle the response here
+      } catch (error) {
+        console.error("Error fetching players:", error);
+      }
+    }
+  };
+
   return (
     <div className="flex justify-center w-full">
-      {/* Button to open the Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className="px-8 py-3 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:outline-none transition duration-200">
@@ -97,7 +165,6 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
           </Button>
         </DialogTrigger>
 
-        {/* Dialog content for team registration */}
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Register Your Team</DialogTitle>
@@ -107,67 +174,149 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col">
-            {/* Popover for selecting teams */}
-            <Popover open={openPopover} onOpenChange={setOpenPopover}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openPopover}
-                  className="justify-between min-w-[300px] w-full"
-                >
-                  {teamSelect?.name || "Select Team"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[400px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search Teams" />
-                  {isLoading ? (
-                    <div className="flex justify-center p-4">
-                      <p>Loading teams...</p>
-                    </div>
-                  ) : isError ? (
-                    <div className="flex justify-center p-4 text-red-500">
-                      Error loading teams.
-                    </div>
-                  ) : (
-                    <CommandList>
-                      <CommandEmpty>No teams found.</CommandEmpty>
-                      <CommandGroup>
-                        {teams?.map(
-                          (team: { _id: string; teamName: string }) => (
-                            <CommandItem
-                              key={team._id}
-                              value={team.teamName}
-                              onSelect={() =>
-                                handleSelectTeam({
-                                  id: team?._id,
-                                  name: team?.teamName,
-                                })
-                              }
-                            >
-                              <Check
-                                className={`mr-2 h-4 w-4 ${
-                                  teamSelect?.name === team.teamName
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                }`}
-                              />
-                              {team.teamName}
-                            </CommandItem>
-                          )
-                        )}
-                      </CommandGroup>
-                    </CommandList>
-                  )}
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="flex flex-col"
+            >
+              <FormField
+                control={form.control}
+                name="team"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Your Team*</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="justify-between min-w-[300px] w-fit"
+                        >
+                          {field?.value.name != ""
+                            ? field?.value?.name
+                            : "Select Team"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <Command>
+                          <CommandInput placeholder="Select team" />
+                          {teamLoading ? (
+                            <div className="flex justify-center p-4">
+                              <p>Loading teams...</p>
+                            </div>
+                          ) : teamError ? (
+                            <div className="flex justify-center p-4 text-red-500">
+                              Error loading teams
+                            </div>
+                          ) : (
+                            <CommandList>
+                              <CommandEmpty>No team found.</CommandEmpty>
+                              <CommandGroup>
+                                {teams?.map((team: any) => (
+                                  <CommandItem
+                                    key={team._id}
+                                    value={team?.teamName}
+                                    onSelect={() => {
+                                      field.onChange({
+                                        teamId: team._id,
+                                        name: team.teamName,
+                                      });
+                                      fetchPlayers(team?.teamName);
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        field.value.name === team.teamName
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      }`}
+                                    />
+                                    {team.teamName}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          )}
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    {form.formState.errors?.team && (
+                      <FormMessage>
+                        {form.formState.errors.team.message}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-          <DialogFooter>
+              <div className="flex gap-2 w-full justify-between mt-4">
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Select a Category*</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <FormMessage />
+                        <SelectContent>
+                          <SelectGroup>
+                            {categories?.map((ele, i) => (
+                              <SelectItem key={i} value={ele.id}>
+                                {ele.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="zone"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Select a Zone*</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Zone" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <FormMessage />
+                        <SelectContent>
+                          <SelectGroup>
+                            {zones.map((zone, i) => (
+                              <SelectItem key={i} value={zone.name}>
+                                {zone.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button className="mt-3" type="submit">
+                Submit
+              </Button>
+            </form>
+          </Form>
+
+          {/* <DialogFooter>
             <Button
               variant="secondary"
               onClick={() => setDialogOpen(false)}
@@ -175,8 +324,7 @@ const RegisterTeamButton = ({ id }: { id: string }) => {
             >
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-          </DialogFooter>
+          </DialogFooter> */}
         </DialogContent>
       </Dialog>
     </div>

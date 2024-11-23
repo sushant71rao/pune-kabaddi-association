@@ -338,6 +338,27 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const getTeamPlayers = asyncHandler(async (req, res) => {
+  const teamName = req.body.teamName;
+  const players = await Player?.find(
+    {
+      teamName: teamName,
+    },
+    {
+      _id: true,
+      firstName: true,
+      middleName: true,
+      lastName: true,
+      avatar: true,
+      playingSkill: true,
+    }
+  );
+
+  // console.log(players);
+
+  res.status(200).json({ success: true, data: players });
+});
+
 const LoginPlayer = LoginUtil(Player);
 
 export {
@@ -352,4 +373,5 @@ export {
   getCurrentPlayer,
   logoutPlayer,
   refreshAccessToken,
+  getTeamPlayers,
 };

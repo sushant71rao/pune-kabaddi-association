@@ -49,20 +49,20 @@ const Header = () => {
         <div className="wrapper flex items-center justify-between px-6">
           {/* Logo Section */}
           <div className="flex items-center">
-            <Link to={"/"}>
+            <Link to={"/"} className="flex items-center">
               <img
                 src="/assets/logo.png"
                 alt="logo"
                 className="h-10 w-auto object-contain"
               />
+              <span className="ml-2 text-xl font-semibold text-red-500">
+                Pune Kabaddi Association
+              </span>
             </Link>
-            <span className="ml-2 text-xl font-semibold text-red-500">
-              MyApp
-            </span>
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm">
+          <nav className="hidden lg:flex items-center gap-6 text-md">
             <NavItems />
           </nav>
 
@@ -74,9 +74,9 @@ const Header = () => {
               variant="outline"
               className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all px-4 py-2 text-sm"
             >
-              {user?.isAdmin && (
-                <Link to="admin/competition-registration">Add Competition</Link>
-              )}
+              <Link to="admin/competition-registration">Add Competition</Link>
+              {/* {user?.isAdmin && (
+              )} */}
             </Button>
 
             {/* Login Button or Profile Dropdown */}

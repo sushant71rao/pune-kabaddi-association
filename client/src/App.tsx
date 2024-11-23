@@ -51,6 +51,10 @@ function App() {
                 path="/competition-details/:id"
                 element={<CompetionDetails />}
               />
+              <Route
+                path="admin/competition-registration"
+                element={<CreateCompetition />}
+              />
               <Route path="/profile" element={<Profile></Profile>} />
               {user?.isAdmin && (
                 <>
@@ -59,10 +63,6 @@ function App() {
                   <Route
                     path="admin/official/:id"
                     element={<OfficialProfile />}
-                  />
-                  <Route
-                    path="admin/competition-registration"
-                    element={<CreateCompetition />}
                   />
 
                   <Route path="admin/officials" element={<Officials />} />
