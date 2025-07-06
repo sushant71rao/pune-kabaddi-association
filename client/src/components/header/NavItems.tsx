@@ -8,7 +8,7 @@ const NavItems = () => {
   let { user } = useContext(AuthContext);
   // console.log(role);
   let Links: { route: string; label: string }[] = headerLinks;
-  if (user?.isAdmin) {
+  if (!user?.isAdmin) {
     Links = headerLinks.concat(AdminLinks);
   }
   return (

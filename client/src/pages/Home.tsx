@@ -11,7 +11,7 @@ const Home = () => {
     <div className="">
       <Hero />
       <RegisterSingIn />
-      <Competitions />
+      {/* <Competitions /> */}
       <News />
       <Events />
       <TeamsCarousel />

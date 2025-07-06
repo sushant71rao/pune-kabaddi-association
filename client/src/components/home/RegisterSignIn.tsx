@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Select,
@@ -34,11 +35,12 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "../ui/use-toast";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const FormSchema = signInSchema;
 
 const RegisterSingIn = () => {
-  let { getuser, getteam } = useContext(AuthContext);
+  let { user ,getuser, getteam } = useContext(AuthContext);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -95,8 +97,8 @@ const RegisterSingIn = () => {
 
   return (
     <MaxWidthWrapper>
-      <div className="flex sm:flex-row flex-col gap-4   items-center justify-center">
-        {/* <Card className="w-full sm:w-4/5">
+      <div className="flex sm:flex-row flex-col gap-4 items-stretch justify-stretch">
+        <Card className="w-full h-full">
           <CardHeader>
             <CardTitle className="text-3xl font-black text-slate-700">
               Register
@@ -115,9 +117,12 @@ const RegisterSingIn = () => {
             <Link to="/official-registration" className="w-full">
               <Button className="w-full">As Umpire</Button>
             </Link>
+            {user?.isAdmin && <Link to="/admin/competition-registration" className="w-full">
+              <Button className="w-full">Register Competition</Button>
+            </Link>}
           </CardFooter>
-        </Card> */}
-        <Card className="w-full sm:w-3/5">
+        </Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-3xl font-black text-slate-700">
               Sign In

@@ -69,7 +69,7 @@ const Header = () => {
           {/* Right Section */}
           <div className="flex items-center gap-6">
             {/* Add Competition Button */}
-            <Button
+            {user?.isAdmin && <Button
               asChild
               variant="outline"
               className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all px-4 py-2 text-sm"
@@ -77,7 +77,7 @@ const Header = () => {
               <Link to="admin/competition-registration">Add Competition</Link>
               {/* {user?.isAdmin && (
               )} */}
-            </Button>
+            </Button>}
 
             {/* Login Button or Profile Dropdown */}
             {!user ? (

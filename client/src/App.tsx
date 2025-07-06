@@ -1,15 +1,15 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-// import PlayerRegistration from "./pages/PlayerRegistration";
+import PlayerRegistration from "./pages/PlayerRegistration";
 // import Register from "./components/Register";
 import Header from "./components/header/Header";
-// import OfficialRegistration from "./pages/OfficialRegistration";
-// import TeamRegistration from "./pages/TeamRegistration";
-// import Admin from "./pages/admin";
+import OfficialRegistration from "./pages/OfficialRegistration";
+import TeamRegistration from "./pages/TeamRegistration";
 import Players from "./pages/Players";
 import Officials from "./pages/Officials";
 import Teams from "./pages/Teams";
+import Competions from "./pages/Competitions";
 import Footer from "./components/Footer";
 import PlayerProfile from "./pages/PlayerProfile";
 import { useContext } from "react";
@@ -20,6 +20,7 @@ import TeamProfile from "./pages/TeamProfile.tsx";
 import OfficialProfile from "./pages/OfficialProfile.tsx";
 import CreateCompetition from "./pages/Competition.tsx";
 import CompetionDetails from "./pages/CompetionDetails.tsx";
+import IDPage from "./pages/IDPage.tsx";
 
 function App() {
   let { user } = useContext(AuthContext);
@@ -33,30 +34,27 @@ function App() {
             <Routes>
               {/* <Route path="/register" element={<Register />} /> */}
               <Route index element={<Home />} />
-              {/* <Route
+              <Route
                 path="/player-registration"
                 element={<PlayerRegistration />}
               />
+              <Route path="/competition/:id" element={<CompetionDetails />} />
               <Route
                 path="/official-registration"
                 element={<OfficialRegistration />}
               />
               <Route path="/id-card/:id" element={<IDPage></IDPage>} />
-              <Route path="/team-registration" element={<TeamRegistration />} /> */}
-              {/* <Route
+              <Route path="/team-registration" element={<TeamRegistration />} />
+              <Route
                 path="/competition-registration"
                 element={<CreateCompetition />}
-              /> */}
-              <Route
-                path="/competition-details/:id"
-                element={<CompetionDetails />}
               />
               <Route
                 path="admin/competition-registration"
                 element={<CreateCompetition />}
               />
               <Route path="/profile" element={<Profile></Profile>} />
-              {user?.isAdmin && (
+              {!user?.isAdmin && (
                 <>
                   <Route path="admin/player/:id" element={<PlayerProfile />} />
                   <Route path="admin/team/:id" element={<TeamProfile />} />
@@ -68,6 +66,7 @@ function App() {
                   <Route path="admin/officials" element={<Officials />} />
                   <Route path="admin/teams" element={<Teams />} />
                   <Route path="admin/players" element={<Players />} />
+                  <Route path="admin/competitions" element={<Competions />} />
                 </>
               )}
             </Routes>

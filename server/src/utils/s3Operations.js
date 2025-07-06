@@ -12,7 +12,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const client = new S3Client({
-  region: "us-east-1",
+  region: "ap-south-1",
   credentials: {
     accessKeyId: process.env.ACCESS_KEY,
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
@@ -21,7 +21,7 @@ const client = new S3Client({
 
 export const setCorsOptions = async () => {
   const input = {
-    Bucket: "f-storage",
+    Bucket: process.env.BUCKET_NAME,
     CORSConfiguration: {
       CORSRules: [
         {
@@ -52,10 +52,11 @@ export const uploadFileToS3 = async (file) => {
     Key: file?.filename,
     Body: fileContent,
   });
+
   try {
     await client.send(command);
-    // console.log(finalres);
-    return `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${file.filename}`;
+    const region = process.env.AWS_REGION || "ap-south-1";
+    return `https://${process.env.BUCKET_NAME}.s3.${region}.amazonaws.com/${file.filename}`;
   } catch (err) {
     console.log(err);
     return undefined;

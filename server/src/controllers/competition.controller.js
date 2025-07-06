@@ -118,3 +118,19 @@ export const AddTeam = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const deleteCompetition = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const competition = await Competition.findByIdAndDelete(id);
+
+    if (!competition) {
+      return res.status(404).json({ message: "Competition not found" });
+    }
+
+    res.status(200).json({ message: "Competition deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting competition:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}

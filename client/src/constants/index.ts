@@ -26,6 +26,9 @@ export const AdminLinks = [
     label: "Officials",
     route: "/admin/officials",
   },
+  {
+    label: "Competitions",
+    route: "/admin/competitions",}
 ];
 
 export const profileFields = [
